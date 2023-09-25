@@ -1,0 +1,6 @@
+
+*.ini
+*.pyc
+*.bak
+*.dxf
+exe.text
