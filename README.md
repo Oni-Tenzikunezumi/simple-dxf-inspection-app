@@ -1,5 +1,5 @@
 ## simple-dxf-inspection-app
- DXFファイルの表示，指定された検図処理を行います．
+ DXFファイルの表示，指定された検図処理を行います．  
  python3.10以降での環境で動作します．
 
  ## 実行方法
@@ -22,13 +22,13 @@
 
  ## 使用ライブラリ
  * DXF処理
-    ezdxf  1.0.3
+    * ezdxf  1.0.3
 
  * UI
-    tkinter
-    matplotlib
-    configparser
+    * tkinter
+    * matplotlib
+    * configparser
 
  * exe化
-    pyinstaller
-    nuitka
+    * pyinstaller
+    * nuitka
