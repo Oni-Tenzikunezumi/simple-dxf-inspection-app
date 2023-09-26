@@ -4,7 +4,7 @@
 
  ## インストールと実行方法
  1. Python3.10以降の環境を用意する．
- 1. 以下のコードを実行してライブラリをインストールする．
+ 1. 以下のコードを実行してライブラリをインストールする．  
  ```pip install -r requirements.txt```
  1. inspector.pyのinspect_doc関数に検図処理を記述する．
  1. simple_viewer.pyを実行する.
