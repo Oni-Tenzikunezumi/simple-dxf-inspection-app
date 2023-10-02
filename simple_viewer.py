@@ -14,7 +14,7 @@ from frames.menubar import SimpleViewMenu
 from frames.viewer_conf import ViewerConf
 from frames.footer import Footer
 from frames.file_reader import FileReader
-from inspector import inspect_doc
+from inspector.inspect import inspect_doc
 
 
 class SimpleViewer():
