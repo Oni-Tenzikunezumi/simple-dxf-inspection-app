@@ -10,6 +10,7 @@ import tkinter as tk
 from frames.environmental_setting_frame import EnvironmentalSettingFrame
 from frames.viewer_conf import ViewerConf
 from frames.footer import Footer
+from frames.help_window import HelpWindow
 
 
 class SimpleViewMenu():
@@ -46,6 +47,7 @@ class SimpleViewMenu():
         # メニューバーへ追加
         self.menubar.add_cascade(label='設定', menu=setting)
         self.menubar.add_cascade(label='表示', menu=view)
+        self.menubar.add_command(label='使用方法', command=self.display_help)
 
     def quit_app(self):
         """終了用関数."""
@@ -87,7 +89,6 @@ class SimpleViewMenu():
         # screen_size = '{}x{}'.format(w, h)
 
         for size in size_opt:
-
             self.size_menu.add_command(label=size, command=lambda s=size:
                                        self.set_winsize(s))
 
@@ -96,3 +97,25 @@ class SimpleViewMenu():
         self.master.state('normal')
         self.master.geometry(size)
         self.master.update()
+
+    def display_help(self):
+        """ヘルプウィンドウの表示."""
+        help_frame = tk.Toplevel(self.master, name='howto')
+        help_frame.title("使用方法")
+        geo_info = list(map(int, self.master.geometry().split('+')[1:3]))
+        display_position = '+{}+{}'.format(geo_info[0]-20, geo_info[1]-20)
+        help_frame.geometry(display_position)
+
+        # モーダル設定
+        help_frame.focus_set()       # フォーカスを新しいウィンドウをへ移す
+        help_frame.transient(self.master)   # タスクバーに表示しない
+
+        help_winow = HelpWindow(help_frame)
+        help_winow.pack()
+
+        # ダイアログが閉じられるまで待つ
+        self.master.wait_window(help_winow)
+
+        if self.fot is not None:
+            self.fot.update_footer()
+        print("使用方法終了.")
