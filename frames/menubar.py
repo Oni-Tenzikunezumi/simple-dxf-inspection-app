@@ -64,7 +64,7 @@ class SimpleViewMenu():
         env_modal.title("環境設定")
 
         # モーダル設定
-        env_modal.grab_set()        # モーダルにする
+        env_modal.grab_set()        # モーダルにする(操作が終わるまで固定)
         env_modal.focus_set()       # フォーカスを新しいウィンドウをへ移す
         env_modal.transient(self.master)   # タスクバーに表示しない
 
