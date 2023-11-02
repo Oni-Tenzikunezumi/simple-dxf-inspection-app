@@ -41,7 +41,7 @@ class AlgorithmSelector(tk.Frame):
 
     def setValues(self):
         """プルダウンメニューの内容を設定する."""
-        vals = ('0個め', '一つ目', '二つ目', '三つ目', '四つ目', '五つ目', '六つ目', )
+        vals = ('零個め', '一個め', '二個め', '三個め', '四個め', '五個め', '六個め', )
         return vals
 
 
