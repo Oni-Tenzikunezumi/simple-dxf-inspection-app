@@ -14,7 +14,8 @@ from frames.menubar import SimpleViewMenu
 from frames.viewer_conf import ViewerConf
 from frames.footer import Footer
 from frames.file_reader import FileReader
-from inspector.inspect import inspect_doc
+
+from inspector.check_base import CheckBase
 
 
 class SimpleViewer():
@@ -73,7 +74,7 @@ class SimpleViewer():
             self.footer.set_filename(self.readpath_frame.file_path)
 
             try:
-                document, cols, data = inspect_doc(doc)
+                document, cols, data = CheckBase.inspect_doc(doc)
 
                 # 図面表示
                 self.plot_frame.update_plot(doc=doc)
