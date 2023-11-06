@@ -6,36 +6,33 @@ Created on Thu Nov  2 16:20:45 2023.
 """
 
 import tkinter as tk
-import tkinter.ttk as ttk
 from pprint import pprint as pprint
 
 from frames.algorithm_selector import AlgorithmSelector
-from tests.inspector_test.test_class import TestBase
-from tests.inspector_test.test_subclass import TestBase
+
+from inspector.check_base import CheckBase
+# from inspector_test import *
 
 
 if __name__ == '__main__':
-    print('aa')
+    # a = CheckBase.__subclasses__()
+    # pprint(a)
+    # for c in a:
+    #     print(c.inspect_name, end=', ')
+    #     c.inspect_doc()
 
-    a = TestBase.__subclasses__()
-    pprint(a)
-    for c in a:
-        print(c.inspect_name)
-        c.inspect_doc()
+    root = tk.Tk()
+    root.geometry('220x200')
+    root.title('AlgorithmSelector test')
 
-
-    # root = tk.Tk()
-    # root.geometry('220x200')
-    # root.title('AlgorithmSelector test')
-
-    # index = tk.IntVar()
-    # algo = AlgorithmSelector(TestBase, root)
+    index = tk.IntVar()
+    algo = AlgorithmSelector(CheckBase, root)
     # algo.pulldown.bind('<<ComboboxSelected>>',
-    #                    lambda e: index.set(algo.pulldown.current()))
-    # algo.pack()
+    #                    lambda e: print('select'))
+    algo.pack()
 
-    # button = tk.Button(root, text='読み取り', command=lambda:
-    #                    print(algo.get(index.get())))
-    # button.pack()
+    button = tk.Button(root, text='読み取り', command=lambda:
+                       print(algo.get_val().inspect_str))
+    button.pack()
 
-    # root.mainloop()
+    root.mainloop()
