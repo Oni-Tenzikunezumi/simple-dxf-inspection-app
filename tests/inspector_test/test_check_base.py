@@ -13,11 +13,12 @@ import os.path as path
 sys.path.append(path.join(path.dirname(__file__), '../..'))
 from inspector.check_base import CheckBase
 
-file_path = r'../../dxf/700.dxf'
-doc = ezdxf.readfile(file_path)
+if __name__ == '__main__':
+    file_path = r'../../dxf/700.dxf'
+    doc = ezdxf.readfile(file_path)
 
+    document, col, data = CheckBase.inspect_doc(doc)
+    print(document)
+    print(col)
+    pprint(data)
 
-document, col, data = CheckBase.inspect_doc(doc)
-print(document)
-print(col)
-pprint(data)
