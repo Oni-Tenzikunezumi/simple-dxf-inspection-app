@@ -13,10 +13,10 @@ class CheckBase:
     """検図アルゴリズムのベースクラス."""
 
     # 検図項目の名前
-    inspect_name: str = '直線抽出'
+    inspect_name: str = '動作テスト'
 
     # 処理内容の説明
-    inspect_str: str = '図面上の全ての直線を抽出し，表示します.'
+    inspect_str: str = 'ベースクラスが表示されています.'
 
     @staticmethod
     def inspect_doc(doc: ezdxf.document.Drawing, Option: tuple[Any] = None):

@@ -6,6 +6,7 @@ Created on Mon Sep 11 10:55:52 2023.
 """
 
 import tkinter as tk
+import tkinter.ttk as ttk
 import traceback
 
 from frames.dxfplot_frame import DxfPlotFrame
@@ -14,7 +15,10 @@ from frames.menubar import SimpleViewMenu
 from frames.viewer_conf import ViewerConf
 from frames.footer import Footer
 from frames.file_reader import FileReader
-from inspector.inspect import inspect_doc
+from frames.algorithm_selector import AlgorithmSelector
+
+from inspector.check_base import CheckBase
+from inspector import *
 
 
 class SimpleViewer():
@@ -44,9 +48,11 @@ class SimpleViewer():
         self.table_frame = TableFrame(master=self.master)
         self.footer = Footer(self.master, self.vconf)
         self.readpath_frame = FileReader(self.master, self.vconf)
+        self.selector = AlgorithmSelector(CheckBase, self.master)
 
-        # 実行ボタンの書き換え
-        self.readpath_frame.executing_button.config(
+        # 実行ボタンの作成
+        self.execution_button = ttk.Button(
+            self.master, text='検図',
             command=lambda: self.process_doc(error_to_console=True))
 
         # メニューバー
@@ -56,7 +62,11 @@ class SimpleViewer():
 
         # 配置
         self.readpath_frame.pack(side=tk.TOP)
+        self.selector.pack(side=tk.TOP)
+        self.execution_button.pack()
+
         self.footer.pack(side=tk.BOTTOM, fill=tk.X)
+
         self.plot_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.table_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
@@ -71,9 +81,11 @@ class SimpleViewer():
         self.table_frame.print_message(message)
         if doc is not None:
             self.footer.set_filename(self.readpath_frame.file_path)
+            inspector = self.selector.get_val()
 
             try:
-                document, cols, data = inspect_doc(doc)
+                document, cols, data = inspector.inspect_doc(doc)
+                self.footer.set_algoname(inspector.inspect_name)
 
                 # 図面表示
                 self.plot_frame.update_plot(doc=doc)
