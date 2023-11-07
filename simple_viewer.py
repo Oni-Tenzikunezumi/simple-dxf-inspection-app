@@ -85,6 +85,7 @@ class SimpleViewer():
 
             try:
                 document, cols, data = inspector.inspect_doc(doc)
+                self.footer.set_algoname(inspector.inspect_name)
 
                 # 図面表示
                 self.plot_frame.update_plot(doc=doc)

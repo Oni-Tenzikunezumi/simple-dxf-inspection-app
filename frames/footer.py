@@ -33,16 +33,23 @@ class Footer(tk.Frame):
                                    textvariable=self.filename,
                                    padding=[10, 0])
 
+        self.algoname = tk.StringVar()
+        algoname_label = ttk.Label(master=self,
+                                   textvariable=self.algoname,
+                                   padding=[10, 0])
+
         # ラベルの初期化
         self.update_footer()
 
         # 配置
         odastate_label.pack(side=tk.RIGHT)
         filename_label.pack(side=tk.RIGHT)
+        algoname_label.pack(side=tk.RIGHT)
 
     def update_footer(self):
         """値の更新."""
         self.set_filename()
+        self.set_algoname()
         self.set_oda_state()
 
     def set_filename(self, path: str = None):
@@ -56,6 +63,17 @@ class Footer(tk.Frame):
         if path is not None and os.path.exists(path):
             basename = os.path.basename(path)
             self.filename.set(form.format(basename))
+
+    def set_algoname(self, inspect_name: str = None):
+        """実行した検図内容を表示.
+
+        指定がない場合は変更しない.
+        """
+        form = '検図内容: {}'
+        basename = '未実行' if inspect_name is None else inspect_name
+
+        self.algoname.set(form.format(basename))
+
 
     def set_oda_state(self):
         """ODAのインストール状況を表示する."""
