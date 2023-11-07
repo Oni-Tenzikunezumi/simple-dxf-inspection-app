@@ -33,12 +33,12 @@ class AlgorithmSelector(tk.Frame):
         self.detail.set(self.details[self.__current_index])
         self.label = ttk.Label(self, textvariable=self.detail)
 
-        self.pulldown.pack()
-        self.label.pack()
+        self.label.pack(side=tk.RIGHT)
+        self.pulldown.pack(side=tk.RIGHT)
 
     def __update_display(self):
         """index, detail,の更新を行う."""
-        print('update')
+        # print('update')
         self.__current_index = self.pulldown.current()
         self.detail.set(self.details[self.__current_index])
 

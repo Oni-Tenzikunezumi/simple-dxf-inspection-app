@@ -11,7 +11,7 @@ from pprint import pprint as pprint
 from frames.algorithm_selector import AlgorithmSelector
 
 from inspector.check_base import CheckBase
-# from inspector_test import *
+from inspector_test import *
 
 
 if __name__ == '__main__':
