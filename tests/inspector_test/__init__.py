@@ -14,7 +14,7 @@ import os
 __all__ = [k[0:-3] for k in filter(lambda x: x[0] != '_',
                                    os.listdir(os.path.dirname(__file__)))]
 
-print('import inspector_test')
+# print('import inspector_test')
 # from . import *
 # print(__all__)
 # print(os.listdir(os.path.dirname(__file__)))

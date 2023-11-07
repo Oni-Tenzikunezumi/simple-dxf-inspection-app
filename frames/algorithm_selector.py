@@ -38,7 +38,7 @@ class AlgorithmSelector(tk.Frame):
 
     def __update_display(self):
         """index, detail,の更新を行う."""
-        print('update')
+        # print('update')
         self.__current_index = self.pulldown.current()
         self.detail.set(self.details[self.__current_index])
 
