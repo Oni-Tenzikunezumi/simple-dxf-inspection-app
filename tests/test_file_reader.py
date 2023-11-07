@@ -28,6 +28,9 @@ if __name__ == '__main__':
 
     fr = FileReader(root, vc)
     fr.pack()
-    fr.executing_button.config(command=print_doc)
+    # fr.executing_button.config(command=print_doc)
+    button = tk.Button(root, text='読み込み',
+                       command=print_doc)
 
+    button.pack()
     root.mainloop()
