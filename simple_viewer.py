@@ -6,6 +6,7 @@ Created on Mon Sep 11 10:55:52 2023.
 """
 
 import tkinter as tk
+import tkinter.ttk as ttk
 import traceback
 
 from frames.dxfplot_frame import DxfPlotFrame
@@ -49,8 +50,9 @@ class SimpleViewer():
         self.readpath_frame = FileReader(self.master, self.vconf)
         self.selector = AlgorithmSelector(CheckBase, self.master)
 
-        # 実行ボタンの書き換え
-        self.readpath_frame.executing_button.config(
+        # 実行ボタンの作成
+        self.execution_button = ttk.Button(
+            self.master, text='検図',
             command=lambda: self.process_doc(error_to_console=True))
 
         # メニューバー
@@ -61,7 +63,10 @@ class SimpleViewer():
         # 配置
         self.readpath_frame.pack(side=tk.TOP)
         self.selector.pack(side=tk.TOP)
+        self.execution_button.pack()
+
         self.footer.pack(side=tk.BOTTOM, fill=tk.X)
+
         self.plot_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.table_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 

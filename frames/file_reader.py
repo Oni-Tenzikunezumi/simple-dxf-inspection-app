@@ -33,14 +33,14 @@ class FileReader(tk.Frame):
         referring_button = ttk.Button(self, width=-1,
                                       text='参照',
                                       command=self.browse_path)
-        self.executing_button = ttk.Button(self,
-                                           text='読み込み',
-                                           command=self.read_file)
+        # self.executing_button = ttk.Button(self,
+        #                                    text='読み込み',
+        #                                    command=self.read_file)
 
         # 配置
         path_entry.pack(side=tk.LEFT)
         referring_button.pack(side=tk.LEFT)
-        self.executing_button.pack(side=tk.LEFT)
+        # self.executing_button.pack(side=tk.LEFT)
 
     def browse_path(self):
         """パス指定."""
@@ -51,7 +51,7 @@ class FileReader(tk.Frame):
         if file_path is not None:
             self._filepath.set(file_path.name)
 
-    def read_file(self):
+    def read_file(self) -> str:
         """ファイルの読み込み."""
         filepath = self._filepath.get()
         text = ''
