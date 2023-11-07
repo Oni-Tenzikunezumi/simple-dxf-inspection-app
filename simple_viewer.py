@@ -81,9 +81,9 @@ class SimpleViewer():
         self.table_frame.print_message(message)
         if doc is not None:
             self.footer.set_filename(self.readpath_frame.file_path)
+            inspector = self.selector.get_val()
 
             try:
-                inspector = self.selector.get_val()
                 document, cols, data = inspector.inspect_doc(doc)
 
                 # 図面表示
