@@ -152,7 +152,7 @@ class FrameField:
         self.error_str = ""
         self.maxMinPoint = []
         self.hasFrame = self.detectCursoryFrame(lines)
-        self.return_list = [self.frameLineList, self.error_str]
+        self.return_list = [self.maxMinPoint, self.error_str]
 
 
     # 直線の端点の座標をリストにして返す
@@ -307,11 +307,11 @@ class FrameField:
 
 
 
-class Inspector_base:
+class Frame_extractor:
     def __init__(self, doc):
         self.doc = doc
         self.disassembly_Poly()
-        self.frameLines = self.detect_frame()
+        self.pointAndMessage = self.detect_frame()
 
     # docの内部のpolylineを分解する
     def disassembly_Poly(self):
@@ -358,6 +358,12 @@ class Inspector_base:
         return FrameInAll.return_list
 
 
+class Frame_extractor_result:
+    def __init__(self, doc):
+        frame_extractor = Frame_extractor(doc)
+        self.framePoint = frame_extractor.pointAndMessage[0]
+        self.message = frame_extractor.pointAndMessage[1]
+
 
 
 if __name__ == "__main__":
@@ -367,18 +373,10 @@ if __name__ == "__main__":
         print(i + 1)
         doc = ezdxf.readfile(filePath)
 
-        frame = Inspector_base(doc)
-        print(frame.frameLines)
+        frame_extractor_result = Frame_extractor_result(doc)
+        print(frame_extractor_result.framePoint)
+        print(frame_extractor_result.message)
 
-        
-        # outputDoc = ezdxf.new()
-        # msp = outputDoc.modelspace()
-
-        # for f in frame.frameLines:
-        #     msp.add_line(f.dxf.start, f.dxf.end, dxfattribs = None)
-
-        # target = filePath.find("\\")
-        # outputDoc.saveas("resultdata/result" + filePath[target + 1: -4] + ".dxf")
         print("-" * 30)
 
         
