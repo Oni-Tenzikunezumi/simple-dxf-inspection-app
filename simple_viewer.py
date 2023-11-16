@@ -8,6 +8,7 @@ Created on Mon Sep 11 10:55:52 2023.
 import tkinter as tk
 import tkinter.ttk as ttk
 import traceback
+import sys
 
 from frames.dxfplot_frame import DxfPlotFrame
 from frames.table_frame import TableFrame
@@ -18,13 +19,15 @@ from frames.file_reader import FileReader
 from frames.algorithm_selector import AlgorithmSelector
 
 from inspector.check_base import CheckBase
+from inspector.frame_extractor import Frame_extractor
+from inspector.frame_extractor import Frame_extractor_result
 from inspector import *
 
 
 class SimpleViewer():
     """表，図面のみ."""
 
-    def __init__(self, master: tk.Tk):
+    def __init__(self, master: tk.Tk, error_to_console=False):
         """イニシャライザ.
 
         Parameters
@@ -53,7 +56,7 @@ class SimpleViewer():
         # 実行ボタンの作成
         self.execution_button = ttk.Button(
             self.master, text='検図',
-            command=lambda: self.process_doc(error_to_console=True))
+            command=lambda: self.process_doc(error_console=error_to_console))
 
         # メニューバー
         _ = SimpleViewMenu(master=self.master,
@@ -73,18 +76,22 @@ class SimpleViewer():
         # バインド
         self.master.protocol('WM_DELETE_WINDOW', self.quit)
 
-    def process_doc(self, error_to_console=True):
+    def process_doc(self, error_console):
         """図面の読み込みと処理を行う."""
-        message = self.readpath_frame.read_file()
-        doc = self.readpath_frame.doc
+        doc, msg = self.readpath_frame.read_file()
 
-        self.table_frame.print_message(message)
+        self.table_frame.print_message(msg)
         if doc is not None:
             self.footer.set_filename(self.readpath_frame.file_path)
             inspector = self.selector.get_val()
 
             try:
-                document, cols, data = inspector.inspect_doc(doc)
+                # 枠線抽出
+                frame: Frame_extractor_result = Frame_extractor_result(doc)
+
+                # 検図
+                doc, _ = self.readpath_frame.read_file()
+                document, cols, data = inspector.inspect_doc(doc, frame)
                 self.footer.set_algoname(inspector.inspect_name)
 
                 # 図面表示
@@ -94,10 +101,11 @@ class SimpleViewer():
                 self.table_frame.create_table(columns=cols, data=data)
 
             except Exception as e:
-                if error_to_console:
-                    print(traceback.format_exc())
+                error = traceback.format_exc()
+                if error_console:
+                    print(error, file=sys.stderr)
                 else:
-                    self.table_frame.add_message(e)
+                    self.table_frame.add_message(error, True)
 
     def quit(self):
         """終了用関数."""
@@ -115,7 +123,7 @@ if __name__ == '__main__':
     root.geometry('{}x{}+200+200'.format(1600, 900))
 
     # フレーム作成
-    viewer = SimpleViewer(master=root)
+    viewer = SimpleViewer(master=root, error_to_console=True)
 
     # 実行
     root.mainloop()

@@ -31,7 +31,7 @@ class CombinedLine:
 
         if len(horizontal) != 0:
             self.getCombinedHorizontalLine(msp, layer, horizontal)
-        
+
         if len(vertical) != 0:
             self.getCombinedVerticalLine(msp, layer, vertical)
 
@@ -48,16 +48,16 @@ class CombinedLine:
         for line in horizontalLines:
             if len(horizontalGroup) == 0:
                 horizontalGroup[line.dxf.start.y] = [l for l in horizontalLines if line.dxf.start.y - tol <= l.dxf.start.y and l.dxf.start.y <= line.dxf.start.y + tol]
-            
+
             flag = False
             for lineList in horizontalGroup.values():
                 if line in lineList:
                     flag = True
                     break
-            
+
             if not flag:
                 horizontalGroup[line.dxf.start.y] = [l for l in horizontalLines if line.dxf.start.y - tol <= l.dxf.start.y and l.dxf.start.y <= line.dxf.start.y + tol]
-        
+
         # 分類した直線をそれぞれ走査して重複している直線の座標を合成する
         combinedLinePositions = []
         judgeSet = set()
@@ -75,13 +75,13 @@ class CombinedLine:
                         basePosition[0] = min([basePosition[0], position[0]], key = lambda pos: pos.x)
                         basePosition[1] = max([basePosition[1], position[1]], key = lambda pos: pos.x)
                         judgeSet.add(line)
-                
+
                 combinedLinePositions.append(basePosition)
 
         # 既存の水平線を削除
         for line in horizontalLines:
             msp.delete_entity(line)
-        
+
         # 結合済みのラインをオブジェクトのリストとして取得
         # 結合済み水平線を書く
         for position in combinedLinePositions:
@@ -94,23 +94,23 @@ class CombinedLine:
         # 垂直線をｘ座標ごとに分類する
         # 最も長い直線の許容傾き誤差±1°座標を許容する
         verticalGroup = {}
-        maxLengthLine = max(verticalLines, key = lambda line: (line.dxf.end - line.dxf.start).magnitude) 
+        maxLengthLine = max(verticalLines, key = lambda line: (line.dxf.end - line.dxf.start).magnitude)
         tol = (maxLengthLine.dxf.end - maxLengthLine.dxf.start).magnitude * Math.cos(89 * Math.pi / 180)
 
-        
+
         for line in verticalLines:
             if len(verticalGroup) == 0:
                 verticalGroup[line.dxf.start.x] = [l for l in verticalLines if line.dxf.start.x - tol <= l.dxf.start.x and l.dxf.start.x <= line.dxf.start.x + tol]
-            
+
             flag = False
             for lineList in verticalGroup.values():
                 if line in lineList:
                     flag = True
                     break
-            
+
             if not flag:
                 verticalGroup[line.dxf.start.x] = [l for l in verticalLines if line.dxf.start.x - tol <= l.dxf.start.x and l.dxf.start.x <= line.dxf.start.x + tol]
-        
+
 
         # 分類した直線をそれぞれ走査して重複している直線の座標を合成する
         combinedLinePositions = []
@@ -129,13 +129,13 @@ class CombinedLine:
                         basePosition[0] = min([basePosition[0], position[0]], key = lambda pos: pos.y)
                         basePosition[1] = max([basePosition[1], position[1]], key = lambda pos: pos.y)
                         judgeSet.add(line)
-                
+
                 combinedLinePositions.append(basePosition)
 
         # 既存の水平線を削除
         for line in verticalLines:
             msp.delete_entity(line)
-        
+
         # 結合済みのラインをオブジェクトのリストとして取得
         # 結合済み水平線を書く
         for position in combinedLinePositions:
@@ -159,12 +159,12 @@ class FrameField:
     # 軸順にソートして返す
     def positionAboutX(self, line):
         res = [line.dxf.start, line.dxf.end]
-        
+
         return sorted(res, key = lambda X: X.x)
-    
+
     def positionAboutY(self, line):
         res = [line.dxf.start, line.dxf.end]
-        
+
         return sorted(res, key = lambda Y: Y.y, reverse = True)
 
 
@@ -181,7 +181,7 @@ class FrameField:
         # 各枠線候補は２本ずつ
         if len(horizontalLines) != 2 or len(verticalLines) != 2:
             return False
-        
+
         # x座標とy座標で並べ替え
         hLines = sorted(horizontalLines, key = lambda line: line.dxf.start.y, reverse = True)
         vLines = sorted(verticalLines, key = lambda line: line.dxf.start.x)
@@ -189,15 +189,15 @@ class FrameField:
         # 座標の取得
         hPosition = [self.positionAboutX(line) for line in hLines]
         vPosition = [self.positionAboutY(line) for line in vLines]
-        
+
         # 各水平線について，左右の端が垂直線の端に大まかにそろっているかを見る
         for i in range(len(hLines)):
             hline = hLines[i]
-            isLeftConnected = self.isSurrounding(hline, hPosition[i][0], vPosition[0][i])    # 左との位置確認 
+            isLeftConnected = self.isSurrounding(hline, hPosition[i][0], vPosition[0][i])    # 左との位置確認
             isRightConnected = self.isSurrounding(hline, hPosition[i][1], vPosition[1][i])   # 右との位置確認
 
             if not(isLeftConnected and isRightConnected): return False
-        
+
         return True
 
 
@@ -209,7 +209,7 @@ class FrameField:
             for j in range(i + 1, n):
                 ele = [i, j]
                 comb.append(ele)
-        
+
         return comb
 
     def detectCursoryFrame(self, lines):
@@ -217,7 +217,7 @@ class FrameField:
         if len(lines) < 6:
             self.error_str = "候補となる水平線、垂直線の数が足りません"
             return False
-        
+
         # 輪郭線の候補を検索 昇順にソートして３つ選択
         horizontal = []
         vertical = []
@@ -255,11 +255,11 @@ class FrameField:
         for e in comb:
             # 水平線候補
             hLines = [ca_horizontal[e[0]], ca_horizontal[e[1]]]
-            
+
             for f in comb:
                 # 垂直線候補
                 vLines = [ca_vertical[f[0]], ca_vertical[f[1]]]
-                
+
                 # 大まかな枠線の判定
                 isCursory = self.isCursoryFrame(hLines, vLines)
 
@@ -277,25 +277,25 @@ class FrameField:
                     self.error_str = "枠線が存在しました"
 
                     return True
-        
+
         self.error_str = "枠線となる四角形が存在しませんでした"
-        
+
         return False
 
-    
+
     # 枠線の左下と右上の頂点を求める
     def getMaxMinPoint(self, hLines):
         top = hLines[0]
         bottom = hLines[1]
         tol = Vec3(1, 1) * ((top.dxf.start - top.dxf.end).magnitude * 0.01)
-        
+
         bottomLeft = sorted([bottom.dxf.start, bottom.dxf.end], key = lambda point: point.x)
         topRight = sorted([top.dxf.start, top.dxf.end], key = lambda point: point.x)
 
         # 左下、右上の順に登録
         self.maxMinPoint.append(bottomLeft[0])
         self.maxMinPoint.append(topRight[1])
-    
+
     def drawCandidateLine(self):
         doc = ezdxf.new()
         msp = doc.modelspace()
@@ -320,7 +320,7 @@ class Frame_extractor:
         polyLines = msp.query("LW POLYLINE")
         for polyLine in polyLines:
             polyLine.explode()
-    
+
     # 全体の枠線を検出するメソッド
     def detect_frame(self):
         layers = self.doc.layers
@@ -345,7 +345,7 @@ class Frame_extractor:
         if not FrameInAll.hasFrame:
             print("枠線は存在しませんでした")
             return FrameInAll.return_list
-    
+
         # layerごとに枠線が存在するか確認する
         # 存在する場合その枠線を登録
         # 存在しない場合、枠線を作る直線の構成がおかしい
@@ -367,7 +367,7 @@ class Frame_extractor_result:
 
 
 if __name__ == "__main__":
-    filePaths = glob.glob('inputdata/*.dxf')
+    filePaths = glob.glob('../dxf/*.dxf')
     for i, filePath in enumerate(filePaths):
         print(filePath)
         print(i + 1)
@@ -379,5 +379,4 @@ if __name__ == "__main__":
 
         print("-" * 30)
 
-        
-    
+
