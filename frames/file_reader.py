@@ -11,6 +11,7 @@ from tkinter import filedialog
 import os.path
 
 from ezdxf.addons import odafc as oda
+from ezdxf.document import Drawing
 import ezdxf
 
 from frames.viewer_conf import ViewerConf
@@ -19,14 +20,14 @@ from frames.viewer_conf import ViewerConf
 class FileReader(tk.Frame):
     """DXFファイルを読み込むクラス."""
 
+    doc = None
+
     def __init__(self, master: tk.Tk, vconf: ViewerConf):
         """イニシャライザ."""
         super().__init__(master)
         self.vconf = vconf
-        self.doc = None
 
         # 読み込み用フォームの作成
-
         self._filepath = tk.StringVar()
         path_entry = ttk.Entry(self, width=60,
                                textvariable=self._filepath)
@@ -51,7 +52,7 @@ class FileReader(tk.Frame):
         if file_path is not None:
             self._filepath.set(file_path.name)
 
-    def read_file(self) -> str:
+    def read_file(self) -> tuple[Drawing, str]:
         """ファイルの読み込み."""
         filepath = self._filepath.get()
         text = ''
@@ -81,7 +82,7 @@ class FileReader(tk.Frame):
             text = '存在しないパスが指定されています．'
 
         # メッセージを返す.
-        return text
+        return self.doc, text
 
     @property
     def file_path(self):
