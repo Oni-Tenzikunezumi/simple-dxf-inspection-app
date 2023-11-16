@@ -43,6 +43,7 @@ class TableFrame(tk.Frame):
                                                   font=('', 20),
                                                   bd=2)
         label.pack(side=tk.TOP, fill=tk.BOTH)
+        self.text_box.tag_config('error', foreground='red')
         self.text_box.pack(side=tk.TOP, fill=tk.BOTH)
 
         # 配置
@@ -162,15 +163,19 @@ class TableFrame(tk.Frame):
         self.print_message(text)
 
     def print_message(self, message):
-        """テキストボックス内に文字列を表示する."""
+        """テキストボックス内を消してから文字列を表示する."""
         self.text_box.config(state='normal')
         self.text_box.delete('1.0', self.text_box.index(tk.END))
         self.text_box.insert(index='1.0', chars=message)
         self.text_box.config(state='disable')
 
-    def add_message(self, message):
+    def add_message(self, message, error=False):
         """テキストボックス内に文字列を追加する."""
         self.text_box.config(state='normal')
         self.text_box.insert(index=tk.END, chars='\n')
-        self.text_box.insert(index=tk.END, chars=message)
+
+        if error:
+            self.text_box.insert(tk.END, message, 'error')
+        else:
+            self.text_box.insert(index=tk.END, chars=message)
         self.text_box.config(state='disable')
