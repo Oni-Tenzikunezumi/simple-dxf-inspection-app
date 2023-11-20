@@ -11,39 +11,50 @@ import ezdxf
 from typing import Any
 from simple_viewer import SimpleViewer
 from inspector.check_base import CheckBase
+from inspector.frame_extractor import Frame_extractor_result as FrameResult
 
 
 class FrameExtractorTestClass(CheckBase):
     """frame_extractorのテストクラス."""
 
     inspect_name: str = '枠線抽出テスト'
-    inspect_str: str = '枠線を抽出し，詳細を表示します．'
-
-    # 表示列名
-    columns: list[str] = ['位置', 'X', 'Y']
+    inspect_str: str = '枠線を抽出し，パラメータを表示します．'
 
     @staticmethod
     def inspect_doc(doc: ezdxf.document.Drawing, **Option: dict[str, Any]):
         """枠線を抽出し，詳細を表示."""
 
-        frameresult = Option['frameresult']
+        fresult: FrameResult = Option['frameresult']
 
-        print(frameresult.framePoint)
-        print(frameresult.message)
+        print(fresult.framePoint)
+        print(fresult.message)
 
         # 図面の処理
-        data = [ent.dxfattribs() for ent in doc.query('LINE')]
+        data = FrameExtractorTestClass.__make_datalist(fresult)
 
         # 表示する図面
         docment = doc
 
         # 列名
-        columns = ('owner', 'handle')  # 列名の指定
+        columns: tuple[str] = ('No.', 'X', 'Y')  # 列名の指定
 
         return docment, columns, data
 
     @staticmethod
-    def
+    def __make_datalist(fresult: FrameResult):
+        """dataを作成する関数."""
+        datalabel: list[str] = ['No.', 'X', 'Y']
+
+        data = []
+        for i, point in enumerate(fresult.framePoint):
+            ddict = {}
+            ddict[datalabel[0]] = i+1
+            ddict[datalabel[1]] = point[0]
+            ddict[datalabel[2]] = point[1]
+
+            data.append(ddict)
+
+        return data
 
 
 # テスト
