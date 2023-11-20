@@ -19,11 +19,14 @@ class FrameExtractorTestClass(CheckBase):
     inspect_name: str = '枠線抽出テスト'
     inspect_str: str = '枠線を抽出し，詳細を表示します．'
 
+    # 表示列名
+    columns: list[str] = ['位置', 'X', 'Y']
+
     @staticmethod
-    def inspect_doc(doc: ezdxf.document.Drawing, Option: tuple[Any] = None):
+    def inspect_doc(doc: ezdxf.document.Drawing, **Option: dict[str, Any]):
         """枠線を抽出し，詳細を表示."""
 
-        frameresult = Option[0]
+        frameresult = Option['frameresult']
 
         print(frameresult.framePoint)
         print(frameresult.message)
@@ -38,6 +41,9 @@ class FrameExtractorTestClass(CheckBase):
         columns = ('owner', 'handle')  # 列名の指定
 
         return docment, columns, data
+
+    @staticmethod
+    def
 
 
 # テスト
