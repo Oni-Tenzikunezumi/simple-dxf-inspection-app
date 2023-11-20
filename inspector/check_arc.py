@@ -20,7 +20,7 @@ class CheckArc(CheckBase):
     inspect_str: str = '図面上の全ての円弧を抽出し，表示します.'
 
     @staticmethod
-    def inspect_doc(doc: ezdxf.document.Drawing, Option: tuple[Any] = None):
+    def inspect_doc(doc: ezdxf.document.Drawing, **Option: dict[str, Any]):
         """円弧抽出."""
         # 図面の処理
         data = [ent.dxfattribs() for ent in doc.query('ARC')]

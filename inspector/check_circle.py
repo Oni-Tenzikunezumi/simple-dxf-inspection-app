@@ -21,7 +21,7 @@ class CheckCircle(CheckBase):
         '表示項目:handle, center, radius'
 
     @staticmethod
-    def inspect_doc(doc: ezdxf.document.Drawing, Option: tuple[Any] = None):
+    def inspect_doc(doc: ezdxf.document.Drawing, **Option: dict[str, Any]):
         """円抽出."""
         # 図面の処理
         data = [ent.dxfattribs() for ent in doc.query('CIRCLE')]
