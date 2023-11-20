@@ -19,7 +19,7 @@ class CheckBase:
     inspect_str: str = 'ベースクラスが表示されています.'
 
     @staticmethod
-    def inspect_doc(doc: ezdxf.document.Drawing, Option: tuple[Any] = None):
+    def inspect_doc(doc: ezdxf.document.Drawing, **Option: dict[str, Any]):
         """図面docを検図し，検図結果のlistと表にする際の列名を返す.
 
         Parameters
