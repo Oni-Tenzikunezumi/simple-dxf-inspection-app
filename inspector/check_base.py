@@ -26,7 +26,7 @@ class CheckBase:
         ----------
         doc : ezdxf.document.Drawing
             検図を行う図面.
-        Option : tuple[Any]
+        **Option: dict[str, Any]
             枠線等の追加情報.
 
         Returns

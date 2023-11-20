@@ -36,7 +36,7 @@ class FrameExtractorTestClass(CheckBase):
         docment = doc
 
         # 列名
-        columns: tuple[str] = ('No.', 'X', 'Y')  # 列名の指定
+        columns = ('No.', 'X', 'Y')  # 列名の指定
 
         return docment, columns, data
 
