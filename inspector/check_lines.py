@@ -20,7 +20,7 @@ class CheckLines(CheckBase):
     inspect_str: str = '図面上の全ての直線を抽出し，表示します.'
 
     @staticmethod
-    def inspect_doc(doc: ezdxf.document.Drawing, Option: tuple[Any] = None):
+    def inspect_doc(doc: ezdxf.document.Drawing, **Option: dict[str, Any]):
         """直線抽出."""
         # 図面の処理
         data = [ent.dxfattribs() for ent in doc.query('LINE')]

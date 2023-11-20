@@ -87,11 +87,12 @@ class SimpleViewer():
 
             try:
                 # 枠線抽出
-                frame: Frame_extractor_result = Frame_extractor_result(doc)
+                frame = Frame_extractor_result(doc)
 
                 # 検図
                 doc, _ = self.readpath_frame.read_file()
-                document, cols, data = inspector.inspect_doc(doc, frame)
+                document, cols, data = inspector.inspect_doc(doc,
+                                                             frameresult=frame)
                 self.footer.set_algoname(inspector.inspect_name)
 
                 # 図面表示
@@ -109,8 +110,8 @@ class SimpleViewer():
 
     def quit(self):
         """終了用関数."""
-        root.quit()
-        root.destroy()
+        self.master.quit()
+        self.master.destroy()
         print('Quit')
 
 
