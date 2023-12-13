@@ -80,7 +80,8 @@ class ViewerConf:
 
         if is_installed:
             try:
-                dxfpath = r"D:\pythontext\prac_ezdzf\prac11dxf_exe\fffffff.dxf"
+                # dxfpath = r"D:\pythontext\prac_ezdzf\prac11dxf_exe\fffffff.dxf"
+                dxfpath = './frames/ODA_check.dwg'
                 _ = oda.readfile(dxfpath)
                 # print(doc)
 
