@@ -101,7 +101,7 @@ class SimpleViewer():
                 # 表の作成
                 self.table_frame.create_table(columns=cols, data=data)
 
-            except Exception as e:
+            except Exception:
                 error = traceback.format_exc()
                 if error_console:
                     print(error, file=sys.stderr)
