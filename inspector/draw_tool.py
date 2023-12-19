@@ -11,6 +11,7 @@ import ezdxf
 import math
 import io
 from ezdxf.document import Drawing
+from ezdxf.entities import MText, Text
 
 class DrawTool:
     
@@ -105,12 +106,30 @@ class DrawTool:
         
     @staticmethod
     def CopyDoc( doc: Drawing ) -> Drawing:
+        '''
+        製図ドキュメントのコピーを作成
+        '''
         stream = io.StringIO()
         doc.write( stream )
         stream.seek(0)
         newdoc = ezdxf.read( stream )
         stream.close()
         return newdoc
+    
+    def ResolveFont( doc : Drawing ) -> Drawing:
+        '''
+        matplotlib で表示できないフォントを表示できるものに変更する
+        '''
+        
+        # style 中の iso.shx フォント
+        for s in doc.styles:
+            s.dxf.font = s.dxf.font.replace( 'iso.shx', 'isocp')
+            
+        # MS PGothic
+        for e in doc.entities:
+            if type(e) is MText or type(e) is Text:
+                e.text = e.text.replace( 'MS PGothic', 'MS Gothic' )
+        
         
         
 # テスト
