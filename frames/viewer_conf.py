@@ -8,7 +8,9 @@ Created on Mon Sep 18 16:27:33 2023.
 import configparser as conf
 import os
 
+import ezdxf
 from ezdxf.addons import odafc as oda
+from ezdxf.enums import TextEntityAlignment
 
 
 class ViewerConf:
@@ -16,16 +18,19 @@ class ViewerConf:
 
     dirpath = r'C:\ProgramFiles\SimpleInspector'
     confpath = dirpath + r'\conf.ini'
+    test_dxfpath = dirpath + r'\test_drawing.dxf'
     oda_section = 'odapath'
 
     def __init__(self, confdir: str = None, initialize_conf: bool = False):
-        """イニシャライザイ."""
+        """イニシャライザ."""
+        self.initialize = initialize_conf
+
         if confdir is not None:
             self.dirpath = confdir
-        # 設定ファイルの存在確認
-        if not os.path.isfile(self.confpath) or initialize_conf:
-            # 存在しない場合初期設定のファイルを作成
-            self.create_conf()
+
+        # 初期設定
+        self.create_conf()
+        self.create_testdxf()
 
         # .iniの読み込み
         self.conf_file = conf.ConfigParser()
@@ -33,19 +38,44 @@ class ViewerConf:
 
     def create_conf(self):
         """初期設定のconfファイルを作成する."""
-        # configの作成
-        config = conf.RawConfigParser()
+        # 設定ファイルの存在確認
+        if not os.path.isfile(self.confpath) or self.initialize:
+            # 存在しない場合初期設定のファイルを作成
+            config = conf.RawConfigParser()
 
-        # 初期設定の入力
-        config.add_section(self.oda_section)
-        path = r'C:\Program Files\ODA\ODAFileConverter\ODAFileConverter.exe'
-        config.set(self.oda_section, 'defa', path)
+            # 初期設定の入力
+            config.add_section(self.oda_section)
+            path = r'C:\Program Files\ODA\ODAFileConverter\ODAFileConverter.exe'
+            config.set(self.oda_section, 'defa', path)
 
-        # ファイル，ディレクトリの作成
-        os.makedirs(self.dirpath, exist_ok=True)
+            # ファイル，ディレクトリの作成
+            os.makedirs(self.dirpath, exist_ok=True)
 
-        with open(self.confpath, 'w', encoding='utf_8') as file:
-            config.write(file)
+            with open(self.confpath, 'w', encoding='utf_8') as file:
+                config.write(file)
+
+    def create_testdxf(self):
+        """読み込み機能確認用DXFの作成."""
+        # 存在確認
+        if not os.path.isfile(self.test_dxfpath) or self.initialize:
+            # 存在しない場合初期設定のファイルを作成
+            doc = ezdxf.new('R2018', setup=True)
+            msp = doc.modelspace()
+
+            msp.add_text('TEST DXF',
+                         dxfattribs={'color': 4,
+                                     'height': 15,
+                                     }).set_placement((0, 0),
+                                                      align=TextEntityAlignment
+                                                      .CENTER)
+
+            try:
+                doc.saveas(self.test_dxfpath)
+            except PermissionError as e:
+                print('テスト用ファイルにアクセスができません.')
+                print('test_drawing.dxfを閉じてください.')
+                print()
+                print(e)
 
     def save_conf(self):
         """設定の保存."""
@@ -65,9 +95,7 @@ class ViewerConf:
     def update_odapath(self, path):
         """odapathを更新する."""
         # items = self.conf_file.items(self.oda_section)
-        self.conf_file.set(self.oda_section,
-                           'opt0',
-                           path)
+        self.conf_file.set(self.oda_section, 'opt0', path)
         self.save_conf()
 
     def is_oda_path(self, oda_path: str) -> bool:
@@ -80,9 +108,7 @@ class ViewerConf:
 
         if is_installed:
             try:
-                # dxfpath = r"D:\pythontext\prac_ezdzf\prac11dxf_exe\fffffff.dxf"
-                dxfpath = './frames/ODA_check.dwg'
-                _ = oda.readfile(dxfpath)
+                _ = oda.readfile(self.test_dxfpath)
                 # print(doc)
 
             except Exception as e:

@@ -9,14 +9,16 @@ Created on Tue Dec 12 20:03:30 2023
 
 class CheckResult:
 
-    columns = ('検査項目', 'エラー', '位置', '見出し', '説明', '色')
+    columns = ( 'No', '検査項目', 'エラー', '位置', '見出し', '説明', '色')
     
-    def __init__(self, checkType:str, error: bool, pos=None, caption:str = '', desc : str = '', color=7 ):
+    def __init__(self, num:int, checkType:str, error: bool, pos=None, caption:str = '', desc : str = '', color=7 ):
         '''
         チェックした結果クラスのコンストラクタ
 
         Parameters
         ----------
+        num : int
+            番号
         checkType : str
             検査項目
         error : bool
@@ -30,6 +32,7 @@ class CheckResult:
         color : TYPE
             描画する時の基本色. The default is 7 (black).
         '''
+        self.num = num
         self.checkType = checkType
         self.error = error
         self.pos = pos
@@ -42,12 +45,13 @@ class CheckResult:
         コラム内容の辞書を返す
         '''
         ret = {
-            CheckResult.columns[0] : self.checkType,
-            CheckResult.columns[1] : self.error,
-            CheckResult.columns[2] : self.pos,
-            CheckResult.columns[3] : self.caption,
-            CheckResult.columns[4] : self.desc,
-            CheckResult.columns[5] : self.color
+            CheckResult.columns[0] : self.num,
+            CheckResult.columns[1] : self.checkType,
+            CheckResult.columns[2] : self.error,
+            CheckResult.columns[3] : self.pos,
+            CheckResult.columns[4] : self.caption,
+            CheckResult.columns[5] : self.desc,
+            CheckResult.columns[6] : self.color
         }
         return ret
         
