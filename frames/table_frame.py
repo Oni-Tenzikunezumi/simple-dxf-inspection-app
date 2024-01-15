@@ -36,11 +36,11 @@ class TableFrame(tk.Frame):
         # 詳細表示用フレーム
         info_frame = tk.Frame(self)
         label = ttk.Label(master=info_frame, text='詳細情報',  # テキストボックス
-                          font=('', 20), padding=(30, 0, 30, 0))
+                          font=('', 14), padding=(30, 0, 30, 0))
         self.text_box = scrolledtext.ScrolledText(master=info_frame,
                                                   state='disable',
                                                   padx=30,
-                                                  font=('', 20),
+                                                  font=('', 12),
                                                   bd=2)
         label.pack(side=tk.TOP, fill=tk.BOTH)
         self.text_box.tag_config('error', foreground='red')
@@ -62,8 +62,8 @@ class TableFrame(tk.Frame):
 
         # 表の書式設定
         style = ttk.Style()
-        style.configure('Treeview.Heading', font=('', 20, 'bold'), rowheight=30)
-        style.configure('Treeview', font=('', 18), rowheight=28)
+        style.configure('Treeview.Heading', font=('', 14, 'bold'), rowheight=30)
+        style.configure('Treeview', font=('', 12), rowheight=28)
 
         # 表用のフレーム
         # TreeView作成
@@ -100,10 +100,20 @@ class TableFrame(tk.Frame):
         self.table.heading('#0', text='')
 
         self.table.column
-
-        for col in self.columns:
-            self.table.column(col, anchor='e', width=100)
-            self.table.heading(col, text=col, anchor='center')
+        
+        if self.columns == ('No', '見出し', '検査項目','説明' ):
+            self.table.column('No', anchor='c', stretch=False, width=50)
+            self.table.heading('No', text='No', anchor='center')
+            self.table.column('見出し', anchor='c', stretch=False, width=150)
+            self.table.heading('見出し', text='見出し', anchor='center')
+            self.table.column('検査項目', anchor='c', stretch=False, width=150)
+            self.table.heading('検査項目', text='検査項目', anchor='center')
+            self.table.column('説明', anchor='w', width=200)            
+            self.table.heading('説明', text='説明', anchor='center')
+        else:
+            for col in self.columns:
+                self.table.column(col, anchor='e', width=100)
+                self.table.heading(col, text=col, anchor='center')
 
     def update_table(self,
                      data: list[dict[str, any]]) -> None:
@@ -153,11 +163,12 @@ class TableFrame(tk.Frame):
         None.
 
         """
-        record_id = self.table.focus()
+        record_id = int(self.table.focus())
         if record_id == '':
             return
-        text = 'Number: {}\n'.format(record_id)
-        for key, val in self.data[int(record_id)].items():
+        #text = 'Number: {}\n'.format(record_id+1)
+        text = ''
+        for key, val in self.data[record_id].items():
             text += "{}: {}\n".format(key, val)
 
         self.print_message(text)

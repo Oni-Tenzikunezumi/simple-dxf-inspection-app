@@ -5,9 +5,11 @@ Created on Tue Nov  7 15:41:24 2023.
 @author: Yuta Kuronuma
 """
 
-import ezdxf
+from ezdxf.document import Drawing
 from typing import Any
 from .check_base import CheckBase
+from .draw_tool import DrawTool
+from .check_result import CheckResult
 
 
 class CheckCircle(CheckBase):
@@ -21,15 +23,51 @@ class CheckCircle(CheckBase):
         '表示項目:handle, center, radius'
 
     @staticmethod
-    def inspect_doc(doc: ezdxf.document.Drawing, **Option: dict[str, Any]):
+    def inspect_doc(doc: Drawing, draw_doc: Drawing, **Option: dict[str, Any]):
         """円抽出."""
+        
+        color = 1 # red
+        
         # 図面の処理
-        data = [ent.dxfattribs() for ent in doc.query('CIRCLE')]
+        data = [ent.dxfattribs() for ent in doc.modelspace().query('CIRCLE')]
 
-        # 表示する図面
-        docment = doc
+        # 図面描画
+        for d in data:
+            c = d['center']
+            r = d['radius']
+            DrawTool.Circle( draw_doc, c, r, color=color, width=1 )
 
-        # 列名
-        columns = ('handle', 'center', 'radius')  # 列名の指定
+        # 結果
+        results = []
+        num = 1
+        rt2 = 1.41421 # root2
+        for d in data:
+            c = d['center']
+            r = d['radius']
+            res = CheckResult(
+                num = num,
+                checkType = CheckCircle.inspect_name,
+                error=False,
+                pos=(c[0]+r/rt2, c[1]+r/rt2),
+                caption='円です',
+                desc='center: {0}, radius: {1}'.format( c, r ),
+                color = color
+                )
+            results.append(res)
+            num += 1
+            
+        # 矢印なし結果
+        for i in range(2):
+            res = CheckResult(
+                num = num,
+                checkType = CheckCircle.inspect_name,
+                error=False,
+                pos=None,
+                caption='円検出サンプル',
+                desc='円検出サンプルの結果になります',
+                color = color
+                )
+            results.append(res)
+            num += 1
 
-        return docment, columns, data
+        return draw_doc, results
