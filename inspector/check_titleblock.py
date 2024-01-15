@@ -6,11 +6,10 @@ Created on Fri Dec  7 15:44:13 2023.
 @author: Shingo Nakamura
 
 """
-import ezdxf
+from ezdxf.document import Drawing
 from typing import Any
 import types
 from .check_base import CheckBase
-from pprint import pprint
 from .draw_tool import DrawTool
 from .check_result import CheckResult
 
@@ -33,7 +32,7 @@ class CheckTitleBlock(CheckBase):
     __eps2 = 0.1    # この範囲内であれば接するつもりが接していない
     
     @staticmethod
-    def inspect_doc(doc: ezdxf.document.Drawing, **Option: dict[str, Any]):
+    def inspect_doc(doc: Drawing, draw_doc, **Option: dict[str, Any]):
         
         cls = CheckTitleBlock
         color = 54
@@ -60,7 +59,7 @@ class CheckTitleBlock(CheckBase):
         except SuccessTitleBlockDetection:
         
             # 表題欄を塗る
-            cls.__DrawTitleBlock(doc, tb_area, lines1, error_lines, color=color)
+            cls.__DrawTitleBlock(draw_doc, tb_area, lines1, error_lines, color=color)
             
             # 検出成功結果登録
             checkType = cls.insepct_type
@@ -68,7 +67,7 @@ class CheckTitleBlock(CheckBase):
             cap = '検出した表題欄'
             desc = '表題欄が検出されました'
             pos = (tb_area.right, (tb_area.top + tb_area.bottom) / 2 )
-            results.append( CheckResult( checkType, error, pos, cap, desc, color) )
+            results.append( CheckResult( len(results)+1, checkType, error, pos, cap, desc, color) )
             
             # 間違い線の結果登録
             for el in error_lines:
@@ -76,7 +75,7 @@ class CheckTitleBlock(CheckBase):
                 cap = '表題欄の罫線に誤りあり'
                 desc = '罫線が正しく接続されていない'
                 pos = CheckTitleBlock.MiddlePoint(el)
-                results.append( CheckResult(checkType, error, pos, cap, desc, color=1) )
+                results.append( CheckResult(len(results)+1, checkType, error, pos, cap, desc, color=1) )
             
             
         # 表題欄位置の検出に失敗した場合
@@ -91,7 +90,7 @@ class CheckTitleBlock(CheckBase):
                 tb_area2 = cls.__FindTitleBlockArea( doc, frm, CheckTitleBlock.__eps2 )
                 
                 # 誤った表題欄の描画
-                cls.__DrawTitleBlock(doc, tb_area2, lines=[], error_lines=[], color=1, hatch=False)
+                cls.__DrawTitleBlock(draw_doc, tb_area2, lines=[], error_lines=[], color=1, hatch=False)
                 
                 # 誤った表題欄の結果登録
                 checkType = cls.inspect_type
@@ -99,7 +98,7 @@ class CheckTitleBlock(CheckBase):
                 cap = '表題欄に誤りあり'
                 desc = '表題欄の枠が正しく描かれていない可能性があります．接続に気をつけてください．'
                 pos = (tb_area2.right, (tb_area2.top+tb_area2.bottom)/2 )
-                results.append( CheckResult(checkType, error, pos, cap, desc, color=1 ) )
+                results.append( CheckResult(len(results)+1, checkType, error, pos, cap, desc, color=1 ) )
 
             # 条件をゆるくして表題欄検出しても失敗
             except Exception as e:
@@ -111,7 +110,7 @@ class CheckTitleBlock(CheckBase):
                 cap = '表題欄なし'
                 desc = '厳密な表題欄が見つかりませんでした．表題欄を確認してください．'
                 pos = None
-                results.append( CheckResult(checkType, error, pos, cap, desc, color=1 ) )
+                results.append( CheckResult(len(results)+1, checkType, error, pos, cap, desc, color=1 ) )
         
         # それ以外のよくわからない失敗
         except Exception as e:
@@ -121,13 +120,10 @@ class CheckTitleBlock(CheckBase):
             error = True
             desc = '表題欄がありません'
             pos = None
-            results.append( CheckResult(checkType, error, pos, desc, color=1 ) )
+            results.append( CheckResult(len(results)+1, checkType, error, pos, desc, color=1 ) )
 
         # 終了
-        document = doc
-        columns = CheckResult.columns
-        data = list( map( lambda r:r.toColumnData(), results) )
-        return document, columns, data
+        return draw_doc, results
         
     
     @classmethod
@@ -144,7 +140,7 @@ class CheckTitleBlock(CheckBase):
         frm.b = min( framePoint[0][1], framePoint[1][1] )
         
         # 直線抽出
-        lines = [ent.dxfattribs() for ent in doc.query('LINE')]
+        lines = [ent.dxfattribs() for ent in doc.modelspace().query('LINE')]
         
         # 枠の右に接する水平線抽出(ついでに左端が start に変更され、上から順になっている)
         h_lines = cls.__ExtractRightTouchHorizontalLine(frm, lines, eps)
@@ -310,7 +306,7 @@ class CheckTitleBlock(CheckBase):
         c5 = lambda l: abs(lft-eps < l['end'][0] < rgt+eps )   # 終了点の x 座標
         c6 = lambda l: abs(btm-eps < l['end'][1] < top+eps )   # 終了点の y 座標
         cond = lambda l: (c1(l) or c2(l)) and (c3(l) and c4(l) and c5(l) and c6(l) )
-        lines = [ent.dxfattribs() for ent in doc.query('LINE')]
+        lines = [ent.dxfattribs() for ent in doc.modelspace().query('LINE')]
         lines = list(filter( cond, lines ))
         
         # 表題欄枠に繋がっている線だけを抽出（主に第三角法の中の直線を排除するため）
@@ -532,18 +528,6 @@ class CheckTitleBlock(CheckBase):
             if abs(lft) < 1.0e09 :
                 h.paths.add_polyline_path(points,is_closed=True)
                 h.set_pattern_fill( "ANSI31", scale=2, color=color)
-        
-    def __DrawMessage( doc, pos, message, color=1 ):
-        
-        # 矢印描画
-        dx, dy = 20, 10
-        pos2 = (pos[0]+dx, pos[1]+dy)
-        DrawTool.Arrow(doc, pos, pos2, color=color, line_width=0.8)
-        
-        # テキスト描画
-        txtHeight = 5
-        pos3 = pos2[0]+2, pos2[1]-txtHeight/2
-        DrawTool.Text(doc, message, pos3, color=color, height=txtHeight )
         
         
     def MiddlePoint( line ):
