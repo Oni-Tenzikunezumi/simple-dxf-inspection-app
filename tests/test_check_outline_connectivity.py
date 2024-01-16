@@ -13,7 +13,7 @@ from pprint import pprint
 import sys
 import os.path as path
 sys.path.append(path.join(path.dirname(__file__), '../..'))
-from inspector.check_outlin_connectivity import CheckOutlineConnectivity
+from inspector.check_outline_connectivity import CheckOutlineConnectivity
 from inspector.frame_extractor import Frame_extractor_result
 import glob
 import tkinter as tk
