@@ -21,13 +21,14 @@ sys.path.append(path.join(path.dirname(__file__), '../..'))
 from inspector.check_titleblock import CheckTitleBlock
 from inspector.frame_extractor import Frame_extractor_result
 from inspector.draw_tool import DrawTool
+from inspector.summarize_drawer import SummarizeDrawer
 import matplotlib
 import glob
 
 
 def main():
-    test1()
-    #test2()
+    # test1()
+    test2()
 
 def test1():
     
@@ -82,13 +83,13 @@ def test2():
     特定のフォルダ内のdwgファイルを処理し、同じフォルダに画像(png)で保存
     '''
     # ODAの場所    
-    oda.win_exec_path = "C:/Program Files/ODA/ODAFileConverter 24.7.0/ODAFileConverter.exe"
+    oda.win_exec_path = "C:/Program Files/ODA/ODAFileConverter 24.11.0/ODAFileConverter.exe"
 
     # 描画の背景色
     ezdxf.addons.drawing.properties.MODEL_SPACE_BG_COLOR = "#EEEEEE"
 
     # フォルダ内の dwg ファイルを取得
-    dir_path = 'C:/Users/shingo/Desktop/0110_ねじ製図課題１検図後/*.dwg'
+    dir_path = 'D:/2023_Satsuka/cadData/1220_ねじ製図課題１/*.dwg'
     dwg_files = glob.glob(dir_path)
 
     # 保存のファイル名作成
@@ -109,13 +110,15 @@ def test2():
         fr = Frame_extractor_result(doc)
         
         # 検出処理
-        CheckTitleBlock.inspect_doc( doc, frameresult = fr )
+        draw_doc = DrawTool.CopyDoc(doc)
+        draw_doc, results = CheckTitleBlock.inspect_doc( doc, draw_doc, frameresult = fr )
+        SummarizeDrawer.summarize(draw_doc, results)
 
         # matplotlib で描画    
-        msp = doc.modelspace()
+        msp = draw_doc.modelspace()
         fig = plt.figure(dpi=300 )
         ax = fig.add_axes([0,0,1,1])
-        ctx = RenderContext(doc)
+        ctx = RenderContext(draw_doc)
         msp_properties = LayoutProperties.from_layout(msp)
         ctx.set_current_layout(msp)
         out = MatplotlibBackend(ax)
@@ -125,7 +128,7 @@ def test2():
         fig.savefig( png_files[i], dpi=300)
         
         plt.close()
-    
+
 
 if __name__ == '__main__':
     main()
