@@ -170,7 +170,7 @@ class FrameField:
 
     # 点と点の距離が許容範囲内になっているか返す
     def isSurrounding(self, line, pointA, pointB):
-        tol = (line.dxf.end - line.dxf.start).magnitude * 0.001
+        tol = (line.dxf.end - line.dxf.start).magnitude * 0.01
         target = (pointB - pointA).magnitude
 
         return target <= tol
@@ -213,9 +213,9 @@ class FrameField:
         return comb
 
     def detectCursoryFrame(self, lines):
-        # 候補となる直線は水平線、垂直線それぞれ3本ずつ必要。よってlinesの長さは６以上
-        if len(lines) < 6:
-            self.error_str = "候補となる水平線、垂直線の数が足りません"
+        # linesの長さは1以上
+        if len(lines) == 0:
+            self.error_str = "直線が存在しません"
             return False
 
         # 輪郭線の候補を検索 昇順にソートして３つ選択
@@ -235,9 +235,16 @@ class FrameField:
         vertical.sort(key = lambda x: (x.dxf.end - x.dxf.start).magnitude, reverse = True)
 
         # 水平線、垂直線それぞれ３本以上必要
-        if len(horizontal) < 3 or len(vertical) < 3:
+        if len(horizontal) < 3 and len(vertical) < 3:
+            self.error_str = '水平線と垂直線のどちらも候補線の数が足りません'
             return False
-
+        elif len(horizontal) < 3:
+            self.error_str = '水平線の候補線の数が足りません'
+            return False
+        elif len(vertical) < 3:
+            self.error_str = '垂直線の候補線の数が足りません'
+            return False
+        
         ca_horizontal = horizontal[:3]
         ca_vertical = vertical[:3]
 
@@ -273,7 +280,7 @@ class FrameField:
                     self.frameLineList.append(hLines[1])
                     self.frameLineList.append(vLines[1])
 
-                    self.getMaxMinPoint(hLines)
+                    self.getframePoint()
                     self.error_str = "枠線が存在しました"
 
                     return True
@@ -282,19 +289,29 @@ class FrameField:
 
         return False
 
+    def getframePoint(self):
+        topLine = self.frameLineList[0]
+        rightLine = self.frameLineList[1]
+        bottomLine = self.frameLineList[2]
+        leftLine = self.frameLineList[3]
 
-    # 枠線の左下と右上の頂点を求める
-    def getMaxMinPoint(self, hLines):
-        top = hLines[0]
-        bottom = hLines[1]
-        tol = Vec3(1, 1) * ((top.dxf.start - top.dxf.end).magnitude * 0.01)
+        self.maxMinPoint.append(self.calPoint(leftLine, bottomLine))
+        self.maxMinPoint.append(self.calPoint(topLine, rightLine))
 
-        bottomLeft = sorted([bottom.dxf.start, bottom.dxf.end], key = lambda point: point.x)
-        topRight = sorted([top.dxf.start, top.dxf.end], key = lambda point: point.x)
+    def calPoint(self, lineA, lineB):
+        """交点計算"""
+        va: Vec3 = lineA.dxf.end - lineA.dxf.start
+        vb: Vec3 = lineB.dxf.end - lineB.dxf.start
+        vab: Vec3 = lineB.dxf.start - lineA.dxf.start
+        vba: Vec3 = -vab
+        
+        bxa: float = vb.cross(va).z
+ 
+        if not va.is_parallel(vb, rel_tol=0.0001):
+            ta: float = vba.cross(vb).z / bxa
+            vt: Vec3 = ta * va + lineA.dxf.start
 
-        # 左下、右上の順に登録
-        self.maxMinPoint.append(bottomLeft[0])
-        self.maxMinPoint.append(topRight[1])
+        return vt
 
     def drawCandidateLine(self):
         doc = ezdxf.new()
@@ -367,7 +384,7 @@ class Frame_extractor_result:
 
 
 if __name__ == "__main__":
-    filePaths = glob.glob('../dxf/*.dxf')
+    filePaths = glob.glob('D:\\2023_Satsuka\dxf練習\inputdata\*.dxf')
     for i, filePath in enumerate(filePaths):
         print(filePath)
         print(i + 1)
