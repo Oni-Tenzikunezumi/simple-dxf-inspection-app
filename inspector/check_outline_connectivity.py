@@ -6,9 +6,11 @@ from ezdxf.math import Vec3
 from ezdxf.entities import Line, Circle, Arc
 from typing import Union
 from typing import Any
+from ezdxf.document import Drawing
 from inspector.check_base import CheckBase
 from inspector.frame_extractor import Frame_extractor_result as FrameResult
 from inspector.draw_tool import DrawTool
+from inspector.check_result import CheckResult
 
 
 class CheckOutlineConnectivity(CheckBase):
@@ -18,7 +20,7 @@ class CheckOutlineConnectivity(CheckBase):
     inspect_str: str = '枠線内に存在する外形線の接続性を確認します'
 
     @staticmethod
-    def inspect_doc(doc: ezdxf.document.Drawing, **Option: dict[str, Any]):
+    def inspect_doc(doc: Drawing, draw_doc: Drawing, **Option: dict[str, Any]):
         """外形線の接続性を確認"""
 
         fresult: FrameResult = Option['frameresult']
@@ -28,46 +30,123 @@ class CheckOutlineConnectivity(CheckBase):
 
         # 実線抽出
         continuousLines: list[ezdxf.entities] = ExtractContinuouslines.extract(doc)
-
+        print(f'len(continuous): {continuousLines}')
+        
         # 交点抽出
         intersections: Intersection = Intersection(continuousLines)
-        lines: list[Line] = intersections.dict.get('LINE')
-        tail = fresult.framePoint[1] + Vec3(20, 0, 0)
-        print(f'len(lines) = {len(lines)}')
-        for i, line in enumerate(lines):
-            middle = (line.dxf.start + line.dxf.end) / 2
-            if fresult.framePoint[0].x > middle.x or middle.x > fresult.framePoint[1].x or fresult.framePoint[0].y > middle.y or fresult.framePoint[1].y < middle.y:
+        print(intersections.outLines.values())
+        
+        number = 1
+        color = 7
+        results = []
+        for entity, cntList in intersections.outLines.items():
+            if not CheckOutlineConnectivity.isInFrame(entity, fresult):
                 continue
-            linePoint: set = {line.dxf.start, line.dxf.end}
+
+            checkType = CheckOutlineConnectivity.inspect_name
+            error = True
+            pos = Vec3(0, 0, 0)
+            caption = ''
+            desc = ''
+
+            if entity.dxftype() == 'LINE':
+                
+
+                pos = (entity.dxf.start + entity.dxf.end) / 2
+                if cntList[0] == 1 or cntList[0] == 0 and cntList[1] >= 2:
+                    caption = 'ループが途切れています'
+                    desc = 'ループが切れた直線が輪郭線内に存在します'
+                    res = CheckResult(
+                        num = number,
+                        checkType = checkType,
+                        error = error,
+                        pos = pos,
+                        caption = caption,
+                        desc = desc,
+                        color = color
+                    )
+                    results.append(res)
+                    number += 1
+                elif cntList[0] == 0:
+                    caption = '余計な線です'
+                    desc = '余計な線が輪郭線内に存在します'
+                    res = CheckResult(
+                        num = number,
+                        checkType = checkType,
+                        error = error,
+                        pos = pos,
+                        caption = caption,
+                        desc = desc,
+                        color = color
+                    )
+                    results.append(res)
+                    number += 1
             
-            pointList: list[Vec3] = list(linePoint - intersections.points)
+            elif entity.dxftype() == 'ARC':
+                pos = entity.start_point
+                if cntList[0] == 1 or cntList[0] == 0 and cntList[1] >= 2:
+                    caption = 'ループが途切れています'
+                    desc = 'ループが切れた円弧が輪郭線内に存在します'
+                    res = CheckResult(
+                        num = number,
+                        checkType = checkType,
+                        error = error,
+                        pos = pos,
+                        caption = caption,
+                        desc = desc,
+                        color = color
+                    )
+                    results.append(res)
+                    number += 1
+                elif cntList[0] == 0:
+                    caption = '余計な線です'
+                    desc = '余計な円弧が輪郭線内に存在します'
+                    res = CheckResult(
+                        num = number,
+                        checkType = checkType,
+                        error = error,
+                        pos = pos,
+                        caption = caption,
+                        desc = desc,
+                        color = color
+                    )
+                    results.append(res)
+                    number += 1
 
-            if len(pointList) != 0:
-                errline[line] = pointList
+            elif entity.dxftype() == 'CORCLE':
+                pos = entity.dxf.center + Vec3(entity.dxf.radius * math.cos(math.pi / 4), entity.dxf.radius * math.sin(math.pi / 4), 0)
+                if cntList[1] < 2:
+                    caption = 'ロープが途切れた円です'
+                    desc = 'ループが切れた円が輪郭線内に存在します'
+                    res = CheckResult(
+                        num = number,
+                        checkType = checkType,
+                        error = error,
+                        pos = pos,
+                        caption = caption,
+                        desc = desc,
+                        color = color
+                    )
+                    results.append(res)
+                    number += 1
 
-                color = 1
-                headSize = 2
-                linewidth = 0.5
 
-                if len(pointList) == 1:
-                    DrawTool.Arrow(doc, pointList[0], tail, color, headSize, linewidth)
-                    DrawTool.Line(doc, tail, tail + Vec3(10, 0, 0), 1, linewidth)
-                elif len(pointList) == 2:
-                    DrawTool.Arrow(doc, (pointList[0] + pointList[1]) / 2, tail, color, headSize, linewidth)
-                    DrawTool.Line(doc, tail, tail + Vec3(10, 0, 0), 1, linewidth)
-                tail += Vec3(0, 10, 0)
+        print(f'len(reuslts): {len(results)}')
 
-        # 図面の処理
-        data = []
-
-        # 表示する図面
-        docment = doc
-
-        # 列名
-        columns = ('No.', 'X', 'Y')  # 列名の指定
-
-        return docment, columns, data
+        return draw_doc, results
     
+    @staticmethod
+    def isInFrame(entity, fresult):
+        bottomleft = fresult.framePoint[0]
+        topright = fresult.framePoint[1]
+
+        if entity.dxftype() == 'LINE':
+            pos = (entity.dxf.start + entity.dxf.end) / 2
+            return bottomleft.x < pos.x < topright.x and bottomleft.y < pos.y < topright.y
+        
+        center = entity.dxf.center
+        return bottomleft.x < center.x < topright.x and bottomleft.y < center.y < topright.y
+            
 
 
 class ExtractContinuouslines:
@@ -76,61 +155,40 @@ class ExtractContinuouslines:
     @staticmethod
     def extract(doc: ezdxf.document.Drawing):
         """実線を抽出"""
+        # 実線のレイヤーを取得
         layers = doc.layers
         continuous_layer = []
         for layer in layers:
             if layer.dxf.linetype == "Continuous":
-                if layer.dxf.name == 'Dimmension':
-                    continue
                 continuous_layer.append(layer.dxf.name)
 
         # layerごとにentityをグループ分け
         group = doc.groupby('layer')
 
-        continuousLines = []
+        # 外形線レイヤーを取得する
+        outlineLayer = ""
+        lenOutLine = 0
         for layerName, entities in group.items():
+            if layerName not in continuous_layer: continue
+
+            count = 0
             for entity in entities:
                 # typeが直線、円、円弧のみを取得、そのほかはスルー
                 dxftype = entity.dxftype()
-                if not (dxftype == 'LINE' or dxftype == 'CIRCLE' or dxftype == 'ARC'):
-                    continue
+                if dxftype == 'LINE' or dxftype == 'CIRCLE' or dxftype == 'ARC':
+                    count += 1
+            
+            if count >= lenOutLine:
+                outlineLayer = layerName
+                lenOutLine = count
 
-                if entity.dxf.linetype == "BYLAYER":
-                    if layerName in continuous_layer:
-                        continuousLines.append(entity)
-                elif entity.dxf.linetype == "CONTINUOUS":
-                    continuousLines.append(entity)
+        # 外形線レイヤの上のエンティティを取得
+        continuousLines = []
+        for entity in group.get(outlineLayer):
+            continuousLines.append(entity)
 
         return continuousLines
 
-
-
-class OutlineConnectivity:
-    """外形線の接続性を確認する実行クラス"""
-
-    def __init__(self, doc: ezdxf.document.Drawing):
-        # 接続性が不足している直線を保存
-        self.errline: dict[Line: list[Vec3]] = {}
-
-        # 実線抽出
-        continuousLines: list[ezdxf.entities] = ExtractContinuouslines.extract(doc)
-
-        # 交点抽出
-        intersections: Intersection = Intersection(continuousLines)
-        lines: list[Line] = intersections.dict.get('LINE')
-        print(f'len(lines) = {len(lines)}')
-        counter = 1
-        for line in lines:
-            linePoint: set = {line.dxf.start, line.dxf.end}
-            
-            pointList: list[Vec3] = list(linePoint - intersections.points)
-
-            if len(pointList) != 0:
-                self.errline[line] = pointList
-
-    def pointInRange(self, pointVec1: Vec3, pointVec2: Vec3):
-        """端点が交点リストに入っているかどうか"""
-        return (pointVec1 - pointVec2).magnitude < Calculator.TOL
 
 
 class Intersection:
@@ -139,6 +197,9 @@ class Intersection:
     def __init__(self, continuousLines: list[ezdxf.entities]):
         #すべての交点をまとめるリスト
         self.points: set = set()
+
+        # 外形線の持つ交点の数をそのエンティティと辞書型で保存
+        self.outLines: dict[ezdxf.entities: list[int]] = {}
 
         # dexftypeごとに分ける
         self.dict: dict[str: list[ezdxf.entities]] = {}
@@ -156,6 +217,89 @@ class Intersection:
         self.getInterCircleAndArc()
         self.getInterArcAndArc()
 
+    def countInter(self, A: Union[Line, Circle, Arc], B: Union[Line, Circle, Arc], pointSet: set):
+        def isRange(endpoint, pointVec, v):
+            return (endpoint - pointVec).magnitude <= v * 0.01
+        
+        if not A in self.outLines.keys():
+            self.outLines[A] = [0, 0]
+        if not B in self.outLines.keys():
+            self.outLines[B] = [0, 0]
+
+        pointList = list(pointSet)
+        
+        if len(pointList) != 0:
+            if A.dxftype() == 'LINE' and B.dxftype() == 'LINE':
+                self.outLines.get(A)[1] += 1
+                self.outLines.get(B)[1] += 1
+
+                va = A.dxf.end - A.dxf.start                
+                vb = B.dxf.end - B.dxf.start
+                lenv = max([va.magnitude, vb.magnitude])
+
+                for endpoint in [A.dxf.start, A.dxf.end]:
+                    if isRange(endpoint, pointList[0], lenv):
+                        self.outLines.get(A)[0] += 1
+                for endpoint in [B.dxf.start, B.dxf.end]:
+                    if isRange(endpoint, pointList[0], lenv):
+                        self.outLines.get(B)[0] += 1
+
+            elif A.dxftype() == 'LINE' and B.dxftype() == 'CIRCLE':
+                for point in pointList:
+                    self.outLines.get(A)[1] += 1
+                    self.outLines.get(B)[1] += 1
+                    
+                    va = A.dxf.end - A.dxf.start
+
+                    for endpoint in [A.dxf.start, A.dxf.end]:
+                        if isRange(endpoint, point, va.magnitude):
+                            self.outLines.get(A)[0] += 1
+                
+            elif A.dxftype() == 'LINE' and B.dxftype() == 'ARC':
+                for point in pointList:
+                    self.outLines.get(A)[1] += 1
+                    self.outLines.get(B)[1] += 1
+                    
+                    va = A.dxf.end - A.dxf.start
+
+                    for endpoint in [A.dxf.start, A.dxf.end]:
+                        if isRange(endpoint, point, va.magnitude):
+                            self.outLines.get(A)[0] += 1
+                    for endpoint in [B.start_point, B.end_point]:
+                        if isRange(endpoint, point, va.magnitude):
+                            self.outLines.get(B)[0] += 1
+
+            elif A.dxftype() == 'CIRCLE' and B.dxftype() == 'CIRCLE':
+                for point in pointList:
+                    self.outLines.get(A)[1] += 1
+                    self.outLines.get(B)[1] += 1
+                    
+            elif A.dxftype() == 'CIRCLE' and B.dxftype() == 'ARC':
+                lenv = max([A.dxf.radius, B.dxf.radius])
+                for point in pointList:
+                    self.outLines.get(A)[1] += 1
+                    self.outLines.get(B)[1] += 1
+                    
+                    for endpoint in [B.start_point, B.end_point]:
+                        if isRange(endpoint, point, lenv):
+                            self.outLines.get(B)[0] += 1
+
+            elif A.dxftype() == 'ARC' and B.dxftype() == 'ARC':
+                lenv = max([A.dxf.radius, B.dxf.radius])
+                for point in pointList:
+                    self.outLines.get(A)[1] += 1
+                    self.outLines.get(B)[1] += 1    
+
+                    for endpoint in [A.start_point, A.end_point]:
+                        if isRange(endpoint, pointList[0], lenv):
+                            self.outLines.get(A)[0] += 1
+                    for endpoint in [B.start_point, B.end_point]:
+                        if isRange(endpoint, pointList[0], lenv):
+                            self.outLines.get(B)[0] += 1
+
+
+
+
     
     def getInterLineAndLine(self):
         """図面内の直線同士の交点を求める"""
@@ -165,6 +309,7 @@ class Intersection:
             for i in range(len(lines)):
                 for j in range(i + 1, len(lines)):
                     pointSet = Calculator.calInterLineAndLine(lines[i], lines[j])
+                    self.countInter(lines[i], lines[j], pointSet)
                     self.points.update(pointSet)
         except KeyError as e:
             print(f'{e}: 直線が存在しません')
@@ -181,6 +326,7 @@ class Intersection:
             for line in lines:
                 for circle in circles:
                     pointSet = Calculator.calInterCircleAndLine(line, circle)
+                    self.countInter(line, circle, pointSet)
                     self.points.update(pointSet)
         except KeyError as e:
             print(f'{e}: 直線または円が存在しません')
@@ -195,6 +341,7 @@ class Intersection:
             for line in lines:
                 for arc in arcs:
                     pointSet = Calculator.calInterArcAndLine(line, arc)
+                    self.countInter(line, arc, pointSet)
                     self.points.update(pointSet)
         except KeyError as e:
             print(f'{e}: 直線または円弧が存在しません')
@@ -206,8 +353,9 @@ class Intersection:
             circles: list[Circle] = self.dict.get('CIRCLE')
 
             for i in range(len(circles)):
-                for j in range(i, len(circles)):
+                for j in range(i + 1, len(circles)):
                     pointSet = Calculator.calInterCircleAndCircle(circles[i], circles[j])
+                    self.countInter(circles[i], circles[j], pointSet)
                     self.points.update(pointSet)
         except KeyError as e:
             print(f'{e}: 円が存在しません')
@@ -224,6 +372,7 @@ class Intersection:
             for circle in circles:
                 for arc in arcs:
                     pointSet = Calculator.calInterCircleAndArc(circle, arc)
+                    self.countInter(circle, arc, pointSet)
                     self.points.update(pointSet)
         except KeyError as e:
             print(f'{e}: 円または円弧が存在しません')
@@ -235,8 +384,9 @@ class Intersection:
             arcs: list[Arc] = self.dict.get('ARC')
 
             for i in range(len(arcs)):
-                for j in range(i, len(arcs)):
+                for j in range(i + 1, len(arcs)):
                     pointSet = Calculator.calInterArcAndArc(arcs[i], arcs[j])
+                    self.countInter(arcs[i], arcs[j], pointSet)
                     self.points.update(pointSet)
         except KeyError as e:
             print(f'{e}: 円弧が存在しません')
@@ -261,26 +411,6 @@ class Calculator:
     @staticmethod
     def isOnLine(pointVec: Vec3, line: Line) -> bool:
         """点が直線上にあるかどうか確認"""
-        # print(f'start: {line.dxf.start}, end: {line.dxf.end}, pointVec: {pointVec}')
-        # va: Vec3 = line.dxf.end - line.dxf.start
-        # vAsP: Vec3 = pointVec - line.dxf.start
-
-        # if va.is_parallel(vAsP, rel_tol=Calculator.TOL):
-        #     t = 0
-        #     vaXis0: bool = abs(va.x) < Calculator.TOL
-        #     vaYis0: bool = abs(va.y) < Calculator.TOL
-
-        #     if vaXis0 and vaYis0:
-        #         t = 0
-        #     elif vaYis0:
-        #         t = vAsP.x / va.x
-        #     else:
-        #         t = vAsP.y / va.y
-        #     print(t)
-        #     return -Calculator.TOL <= t and t <= 1 + Calculator.TOL
-        # else:
-        #     return False
-
         # 点と直線の距離
         distance: float = Calculator.calRangePointAndLine(pointVec, line)
         
@@ -545,7 +675,8 @@ class Calculator:
         if not v1.is_parallel(v2, rel_tol=Calculator.TOL) and v1.distance(v2) <= Calculator.TOL:
             return False
         
-        return Calculator.isOnLine(line1.dxf.start, line2) or Calculator.isOnLine(line1.dxf.end, line2) or Calculator.isOnLine(line2.dxf.start, line1) or Calculator.isOnLine(line2.dxf.end, line1)
+        return Calculator.isOnLine(line2.dxf.start, line1) or Calculator.isOnLine(line2.dxf.end, line1) or Calculator.isOnLine(line1.dxf.start, line2) or Calculator.isOnLine(line1.dxf.end, line2)
+            
 
 
 
@@ -554,24 +685,18 @@ def test():
     path = "D:\\2023_Satsuka\dxf練習\inputdata\\test01.dxf"
     doc = ezdxf.readfile(path)
 
-    connectivity: OutlineConnectivity = OutlineConnectivity(doc)
+    continuous = ExtractContinuouslines.extract(doc)
+    
+    intersections = Intersection(continuous)
 
-
-    print(f'errLineDict = {connectivity.errline}')
-    print(f'len errLineDict = {len(connectivity.errline)}')
-
-    msp = doc.modelspace()
-
-    for list in connectivity.errline.values():
-        for point in list:
-            msp.add_circle(point, 5, dxfattribs = None)
+    print(intersections.outLines)
 
     # intersections = Intersection(ExtractContinuouslines.extract(doc))
     # for point in intersections.points:
     #     msp.add_circle(point, 5, dxfattribs = None)
 
-    resultPath = path[:-4] + '_test.dxf'
-    doc.saveas(resultPath)
+    # resultPath = path[:-4] + '_test.dxf'
+    # doc.saveas(resultPath)
 
     # intersections = Intersection(ExtractContinuouslines.extract(doc))
     # print(intersections.points)

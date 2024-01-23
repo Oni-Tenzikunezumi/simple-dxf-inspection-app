@@ -15,6 +15,8 @@ import os.path as path
 sys.path.append(path.join(path.dirname(__file__), '../..'))
 from inspector.check_outline_connectivity import CheckOutlineConnectivity
 from inspector.frame_extractor import Frame_extractor_result
+from inspector.draw_tool import DrawTool
+from inspector.summarize_drawer import SummarizeDrawer
 import glob
 import tkinter as tk
 from simple_viewer import SimpleViewer
@@ -22,8 +24,8 @@ from simple_viewer import SimpleViewer
 
 def main():
     # test1()
-    test2()
-    # test3()
+    # test2()
+    test3()
 
 def test1():
     
@@ -83,7 +85,7 @@ def test2():
     ezdxf.addons.drawing.properties.MODEL_SPACE_BG_COLOR = "#EEEEEE"
 
     # フォルダ内の dwg ファイルを取得
-    dir_path = 'D:/2023_Satsuka/cad data/1310_ねじ製図課題２/*.dwg'
+    dir_path = 'D:/2023_Satsuka/cadData/1310_ねじ製図課題２/*.dwg'
     dwg_files = glob.glob(dir_path)
 
     # 保存のファイル名作成
@@ -104,13 +106,15 @@ def test2():
         fr = Frame_extractor_result(doc)
         
         # 検出処理
-        CheckOutlineConnectivity.inspect_doc( doc, frameresult = fr )
+        draw_doc = DrawTool.CopyDoc(doc)
+        draw_doc, results = CheckOutlineConnectivity.inspect_doc( doc, draw_doc, frameresult = fr )
+        SummarizeDrawer.summarize(draw_doc, results)
 
         # matplotlib で描画    
-        msp = doc.modelspace()
+        msp = draw_doc.modelspace()
         fig = plt.figure(dpi=300 )
         ax = fig.add_axes([0,0,1,1])
-        ctx = RenderContext(doc)
+        ctx = RenderContext(draw_doc)
         msp_properties = LayoutProperties.from_layout(msp)
         ctx.set_current_layout(msp)
         out = MatplotlibBackend(ax)
