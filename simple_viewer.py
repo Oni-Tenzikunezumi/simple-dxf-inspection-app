@@ -19,7 +19,6 @@ from frames.file_reader import FileReader
 from frames.algorithm_selector import AlgorithmSelector
 
 from inspector.check_base import CheckBase
-from inspector.frame_extractor import Frame_extractor
 from inspector.frame_extractor import Frame_extractor_result
 from inspector.draw_tool import DrawTool
 from inspector.summarize_drawer import SummarizeDrawer
@@ -96,20 +95,20 @@ class SimpleViewer():
                 draw_doc = DrawTool.CopyDoc(doc)
                 draw_doc = DrawTool.ResolveFont(draw_doc)
                 draw_doc, results = inspector.inspect_doc(doc, draw_doc,
-                                                             frameresult=frame)
-                
+                                                          frameresult=frame)
+
                 # フッター
                 self.footer.set_algoname(inspector.inspect_name)
 
                 # キャプション等描画
-                SummarizeDrawer.summarize( draw_doc, results )
-                
+                SummarizeDrawer.summarize(draw_doc, results)
+
                 # 図面表示
                 self.plot_frame.update_plot(doc=draw_doc)
 
                 # 表の作成
-                cols = ('No', '見出し', '検査項目','説明' )
-                data = [ r.toColumnData() for r in results]
+                cols = ('No', '見出し', '検査項目', '説明')
+                data = [r.toColumnData() for r in results]
                 self.table_frame.create_table(columns=cols, data=data)
 
             except Exception:

@@ -4,3 +4,5 @@
 *.bak
 *.dxf
 exe.text
+*.dwl
+*.dwl2
