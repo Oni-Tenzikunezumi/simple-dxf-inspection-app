@@ -100,15 +100,15 @@ class TableFrame(tk.Frame):
         self.table.heading('#0', text='')
 
         self.table.column
-        
-        if self.columns == ('No', '見出し', '検査項目','説明' ):
+
+        if self.columns == ('No', '見出し', '検査項目', '説明'):
             self.table.column('No', anchor='c', stretch=False, width=50)
             self.table.heading('No', text='No', anchor='center')
             self.table.column('見出し', anchor='c', stretch=False, width=150)
             self.table.heading('見出し', text='見出し', anchor='center')
             self.table.column('検査項目', anchor='c', stretch=False, width=150)
             self.table.heading('検査項目', text='検査項目', anchor='center')
-            self.table.column('説明', anchor='w', width=200)            
+            self.table.column('説明', anchor='w', width=200)
             self.table.heading('説明', text='説明', anchor='center')
         else:
             for col in self.columns:
@@ -166,7 +166,7 @@ class TableFrame(tk.Frame):
         record_id = int(self.table.focus())
         if record_id == '':
             return
-        #text = 'Number: {}\n'.format(record_id+1)
+        # text = 'Number: {}\n'.format(record_id+1)
         text = ''
         for key, val in self.data[record_id].items():
             text += "{}: {}\n".format(key, val)
