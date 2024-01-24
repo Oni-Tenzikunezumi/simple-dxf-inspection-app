@@ -101,7 +101,7 @@ class SimpleViewer():
                 self.footer.set_algoname(inspector.inspect_name)
 
                 # キャプション等描画
-                SummarizeDrawer.summarize(draw_doc, results)
+                SummarizeDrawer.summarize(draw_doc, results, max_items=16)
 
                 # 図面表示
                 self.plot_frame.update_plot(doc=draw_doc)

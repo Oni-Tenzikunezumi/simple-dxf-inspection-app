@@ -22,7 +22,7 @@ class SummarizeDrawer:
     BASE_LINE_WIDTH = 0.8
 
     @classmethod
-    def summarize( cls, doc: Drawing, results: list[CheckResult] ):
+    def summarize( cls, doc: Drawing, results: list[CheckResult], max_items=-1 ):
         
         cls.__drawdoc = doc
         cls.__bb = BoundingBox.DrawingBB(doc)
@@ -30,6 +30,13 @@ class SummarizeDrawer:
         cls.__font_size = cls.BASE_FONT_SIZE * cls.__sf
         cls.__line_space= cls.BASE_LINE_SPACE * cls.__sf
         cls.__line_width = cls.BASE_LINE_WIDTH * cls.__sf
+        
+        # 表示する項目数を制限する
+        if max_items > 0 and len(results) > max_items:
+            non_view_items = len(results) - max_items
+            results = results[:max_items]
+            ck = CheckResult( 0, "System", False, caption='他{0}項目あり'.format(non_view_items))
+            results.append(ck)
         
         # リストをUpperとRight領域に分割
         up_rslts, rt_rslts, non_rslts = cls.__split_to_upper_right_non(cls.__bb, results)
