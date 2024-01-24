@@ -47,7 +47,8 @@ class FileReader(tk.Frame):
         """パス指定."""
         filetype = [('DXFファイル', '*.dxf')]
         if self.vconf.is_oda_installed:
-            filetype = [('AutoCADファイル', '*.dwg'), ('DXFファイル', '*.dxf')]
+            filetype = [('図面ファイル', '*.dwg;*.dxf'), ('AutoCADファイル', '*.dwg'),
+                        ('DXFファイル', '*.dxf')]
         file_path = filedialog.askopenfile(filetype=filetype)
         if file_path is not None:
             self._filepath.set(file_path.name)
