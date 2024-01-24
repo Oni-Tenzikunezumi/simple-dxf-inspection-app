@@ -9,6 +9,8 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import scrolledtext
 
+from frames.frame_constants import Fontsize
+
 
 class TableFrame(tk.Frame):
     """表を作成するフレーム."""
@@ -36,11 +38,11 @@ class TableFrame(tk.Frame):
         # 詳細表示用フレーム
         info_frame = tk.Frame(self)
         label = ttk.Label(master=info_frame, text='詳細情報',  # テキストボックス
-                          font=('', 14), padding=(30, 0, 30, 0))
+                          font=('', Fontsize.HEAD), padding=(30, 0, 30, 0))
         self.text_box = scrolledtext.ScrolledText(master=info_frame,
                                                   state='disable',
                                                   padx=30,
-                                                  font=('', 12),
+                                                  font=('', Fontsize.CONTENT),
                                                   bd=2)
         label.pack(side=tk.TOP, fill=tk.BOTH)
         self.text_box.tag_config('error', foreground='red')
@@ -62,8 +64,8 @@ class TableFrame(tk.Frame):
 
         # 表の書式設定
         style = ttk.Style()
-        style.configure('Treeview.Heading', font=('', 14, 'bold'), rowheight=30)
-        style.configure('Treeview', font=('', 12), rowheight=28)
+        style.configure('Treeview.Heading', font=('', Fontsize.HEAD, 'bold'), rowheight=30)
+        style.configure('Treeview', font=('', Fontsize.CONTENT), rowheight=28)
 
         # 表用のフレーム
         # TreeView作成
