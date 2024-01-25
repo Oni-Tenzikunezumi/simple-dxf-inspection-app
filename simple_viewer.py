@@ -54,14 +54,16 @@ class SimpleViewer():
         self.plot_frame = DxfPlotFrame(master=self.master)
         self.table_frame = TableFrame(master=self.master)
         self.footer = Footer(self.master, self.vconf)
-        self.readpath_frame = FileReader(self.master, self.vconf)
-        self.selector = AlgorithmSelector(CheckBase, self.master)
+        self.header = tk.Frame(self.master)
+
+        self.readpath_frame = FileReader(self.header, self.vconf)
+        self.selector = AlgorithmSelector(CheckBase, self.header)
 
         # 実行ボタンの作成
         style = ttk.Style()
         style.configure('ececution.TButton', font=Fontsize.HEAD)
         self.execution_button = ttk.Button(
-            self.master, text='検図', style='ececution.TButton',
+            self.header, text='検図', style='ececution.TButton',
             command=lambda: self.process_doc(error_console=error_to_console))
 
         # メニューバー
@@ -70,9 +72,10 @@ class SimpleViewer():
                            footer=self.footer)
 
         # 配置
-        self.readpath_frame.pack(side=tk.TOP)
-        self.selector.pack(side=tk.TOP)
-        self.execution_button.pack()
+        self.header.pack(side=tk.TOP)
+        self.readpath_frame.pack(side=tk.LEFT)
+        self.selector.pack(side=tk.LEFT)
+        self.execution_button.pack(side=tk.LEFT)
 
         self.footer.pack(side=tk.BOTTOM, fill=tk.X)
 

@@ -19,15 +19,14 @@ class CheckCircle(CheckBase):
     inspect_name: str = '円抽出'
 
     # 処理内容の説明
-    inspect_str: str = '図面上の全ての円を抽出し，表示します.\n'\
-        '表示項目:handle, center, radius'
+    inspect_str: str = '図面上の全ての円を抽出し，表示します.'
 
     @staticmethod
     def inspect_doc(doc: Drawing, draw_doc: Drawing, **Option: dict[str, Any]):
         """円抽出."""
-        
+
         color = 1 # red
-        
+
         # 図面の処理
         data = [ent.dxfattribs() for ent in doc.modelspace().query('CIRCLE')]
 
@@ -55,7 +54,7 @@ class CheckCircle(CheckBase):
                 )
             results.append(res)
             num += 1
-            
+
         # 矢印なし結果
         for i in range(2):
             res = CheckResult(
