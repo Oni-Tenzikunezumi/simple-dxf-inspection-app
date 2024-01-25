@@ -10,6 +10,7 @@ exe.text
 *.pyz
 *.manifest
 *.pkg
+build/simple_viewer/warn-simple_viewer.txt
 *.html
 *.spec
 *.zip
