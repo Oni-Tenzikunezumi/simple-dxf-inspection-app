@@ -11,3 +11,4 @@ class Fontsize:
 
     HEAD = 14
     CONTENT = 12
+    FOOTER = 7

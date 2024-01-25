@@ -15,6 +15,7 @@ from ezdxf.document import Drawing
 import ezdxf
 
 from frames.viewer_conf import ViewerConf
+from frames.frame_constants import Fontsize
 
 
 class FileReader(tk.Frame):
@@ -30,10 +31,13 @@ class FileReader(tk.Frame):
         # 読み込み用フォームの作成
         self._filepath = tk.StringVar()
         path_entry = ttk.Entry(self, width=60,
-                               textvariable=self._filepath)
+                               textvariable=self._filepath, font=Fontsize.HEAD)
+
+        style = ttk.Style()
+        style.configure('referring.TButton', font=Fontsize.HEAD)
         referring_button = ttk.Button(self, width=-1,
-                                      text='参照',
-                                      command=self.browse_path)
+                                      text='参照', command=self.browse_path,
+                                      style='referring.TButton')
         # self.executing_button = ttk.Button(self,
         #                                    text='読み込み',
         #                                    command=self.read_file)
