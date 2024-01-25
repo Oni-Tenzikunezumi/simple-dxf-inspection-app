@@ -8,6 +8,7 @@ Created on Thu Nov  2 13:14:22 2023.
 import tkinter as tk
 import tkinter.ttk as ttk
 
+from frames.frame_constants import Fontsize
 
 class AlgorithmSelector(tk.Frame):
     """検図アルゴリズムを選択するためのクラス."""
@@ -22,7 +23,10 @@ class AlgorithmSelector(tk.Frame):
         self.set_baseclass(baseclass)
 
         # プルダウンメニュー
-        self.pulldown = ttk.Combobox(self, values=self.names)
+        # style = ttk.Style()
+        # style.configure('pulldown.TCombobox', font=Fontsize.HEAD)
+        self.pulldown = ttk.Combobox(self, values=self.names,
+                                     font=('', Fontsize.HEAD))
         self.pulldown.current(self.__current_index)
         self.pulldown.config(state="readonly")
         self.pulldown.bind('<<ComboboxSelected>>',
@@ -31,7 +35,10 @@ class AlgorithmSelector(tk.Frame):
         # 詳細用ラベル
         self.detail = tk.StringVar()
         self.detail.set(self.details[self.__current_index])
-        self.label = ttk.Label(self, textvariable=self.detail)
+        style = ttk.Style()
+        style.configure('label.TLabel', font=Fontsize.HEAD)
+        self.label = ttk.Label(self, textvariable=self.detail,
+                               style='label.TLabel')
 
         self.label.pack(side=tk.RIGHT)
         self.pulldown.pack(side=tk.RIGHT)

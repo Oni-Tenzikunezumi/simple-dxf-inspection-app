@@ -10,6 +10,8 @@ import tkinter.ttk as ttk
 import traceback
 import sys
 
+# import frames
+from frames.frame_constants import Fontsize
 from frames.dxfplot_frame import DxfPlotFrame
 from frames.table_frame import TableFrame
 from frames.menubar import SimpleViewMenu
@@ -19,6 +21,7 @@ from frames.file_reader import FileReader
 from frames.algorithm_selector import AlgorithmSelector
 
 from inspector.check_base import CheckBase
+from inspector.frame_extractor import Frame_extractor
 from inspector.frame_extractor import Frame_extractor_result
 from inspector.draw_tool import DrawTool
 from inspector.summarize_drawer import SummarizeDrawer
@@ -55,8 +58,10 @@ class SimpleViewer():
         self.selector = AlgorithmSelector(CheckBase, self.master)
 
         # 実行ボタンの作成
+        style = ttk.Style()
+        style.configure('ececution.TButton', font=Fontsize.HEAD)
         self.execution_button = ttk.Button(
-            self.master, text='検図',
+            self.master, text='検図', style='ececution.TButton',
             command=lambda: self.process_doc(error_console=error_to_console))
 
         # メニューバー

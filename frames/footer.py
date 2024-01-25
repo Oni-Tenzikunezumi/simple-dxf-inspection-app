@@ -11,6 +11,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 
 from frames.viewer_conf import ViewerConf
+from frames.frame_constants import Fontsize
 
 
 class Footer(tk.Frame):
@@ -21,22 +22,25 @@ class Footer(tk.Frame):
         super().__init__(master)
         self.vconf = vconf
 
+        style = ttk.Style()
+        style.configure('footer.TLabel', font=Fontsize.FOOTER)
+
         # 各ラベルの作成
         self.odastate = tk.StringVar()
         odastate_label = ttk.Label(master=self,
                                    textvariable=self.odastate,
-                                   padding=[10, 0])
+                                   padding=[10, 0], style='footer.TLabel')
 
         self.filename = tk.StringVar()
         self.filename.set('File Name: None')
         filename_label = ttk.Label(master=self,
                                    textvariable=self.filename,
-                                   padding=[10, 0])
+                                   padding=[10, 0], style='footer.TLabel')
 
         self.algoname = tk.StringVar()
         algoname_label = ttk.Label(master=self,
                                    textvariable=self.algoname,
-                                   padding=[10, 0])
+                                   padding=[10, 0], style='footer.TLabel')
 
         # ラベルの初期化
         self.update_footer()
