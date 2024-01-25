@@ -22,25 +22,25 @@ class Footer(tk.Frame):
         super().__init__(master)
         self.vconf = vconf
 
-        style = ttk.Style()
-        style.configure('footer.TLabel', font=Fontsize.FOOTER)
+        # style = ttk.Style()
+        # style.configure('footer.TLabel', font=Fontsize.FOOTER)
 
         # 各ラベルの作成
         self.odastate = tk.StringVar()
         odastate_label = ttk.Label(master=self,
                                    textvariable=self.odastate,
-                                   padding=[10, 0], style='footer.TLabel')
+                                   padding=[10, 0], font=("", Fontsize.HEAD))
 
         self.filename = tk.StringVar()
         self.filename.set('File Name: None')
         filename_label = ttk.Label(master=self,
                                    textvariable=self.filename,
-                                   padding=[10, 0], style='footer.TLabel')
+                                   padding=[10, 0], font=("", Fontsize.HEAD))
 
         self.algoname = tk.StringVar()
         algoname_label = ttk.Label(master=self,
                                    textvariable=self.algoname,
-                                   padding=[10, 0], style='footer.TLabel')
+                                   padding=[10, 0], font=("", Fontsize.HEAD))
 
         # ラベルの初期化
         self.update_footer()
