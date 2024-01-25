@@ -31,10 +31,11 @@ class FileReader(tk.Frame):
         # 読み込み用フォームの作成
         self._filepath = tk.StringVar()
         path_entry = ttk.Entry(self, width=60,
-                               textvariable=self._filepath, font=Fontsize.HEAD)
+                               textvariable=self._filepath,
+                               font=("", Fontsize.HEAD))
 
         style = ttk.Style()
-        style.configure('referring.TButton', font=Fontsize.HEAD)
+        style.configure('referring.TButton', font=("", Fontsize.HEAD))
         referring_button = ttk.Button(self, width=-1,
                                       text='参照', command=self.browse_path,
                                       style='referring.TButton')

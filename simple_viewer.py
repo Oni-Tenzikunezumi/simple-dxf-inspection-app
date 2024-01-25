@@ -61,7 +61,7 @@ class SimpleViewer():
 
         # 実行ボタンの作成
         style = ttk.Style()
-        style.configure('ececution.TButton', font=Fontsize.HEAD)
+        style.configure('ececution.TButton', font=("", Fontsize.HEAD))
         self.execution_button = ttk.Button(
             self.header, text='検図', style='ececution.TButton',
             command=lambda: self.process_doc(error_console=error_to_console))

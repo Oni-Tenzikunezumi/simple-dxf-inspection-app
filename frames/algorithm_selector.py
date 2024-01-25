@@ -35,10 +35,8 @@ class AlgorithmSelector(tk.Frame):
         # 詳細用ラベル
         self.detail = tk.StringVar()
         self.detail.set(self.details[self.__current_index])
-        style = ttk.Style()
-        style.configure('label.TLabel', font=Fontsize.HEAD)
         self.label = ttk.Label(self, textvariable=self.detail,
-                               style='label.TLabel')
+                               font=("", Fontsize.HEAD))
 
         self.label.pack(side=tk.RIGHT)
         self.pulldown.pack(side=tk.RIGHT)
