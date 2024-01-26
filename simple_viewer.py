@@ -137,8 +137,7 @@ if __name__ == '__main__':
 
     # ウィンドウ作成
     root = tk.Tk()
-    root.title('Nuitka')
-    root.title(os.path.basename(__file__))
+    root.title('Simple viewer')
     root.geometry('{}x{}+200+200'.format(1600, 900))
 
     # フレーム作成
