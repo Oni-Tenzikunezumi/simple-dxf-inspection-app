@@ -108,11 +108,10 @@ class SimpleViewer():
 
                 # キャプション等描画
                 SummarizeDrawer.summarize(draw_doc, results, max_items=16)
-                draw_doc.saveas(r"D:\dxf_dataset\testfile.dxf")
 
                 # 図面表示
-                self.plot_frame.update_plot(doc=draw_doc)
                 draw_doc = DrawTool.ResolveFont(draw_doc)
+                self.plot_frame.update_plot(doc=draw_doc)
 
                 # 表の作成
                 cols = ('No', '見出し', '検査項目', '説明')
@@ -138,7 +137,8 @@ if __name__ == '__main__':
 
     # ウィンドウ作成
     root = tk.Tk()
-    root.title('resolve位置を変更')
+    root.title('Nuitka')
+    root.title(os.path.basename(__file__))
     root.geometry('{}x{}+200+200'.format(1600, 900))
 
     # フレーム作成
@@ -146,6 +146,3 @@ if __name__ == '__main__':
 
     # 実行
     root.mainloop()
-
-    # コンソール保持
-    # input()
