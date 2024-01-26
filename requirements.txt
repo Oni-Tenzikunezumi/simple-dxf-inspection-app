@@ -1,21 +1,44 @@
-altgraph==0.17.3
-contourpy==1.1.1
-cycler==0.11.0
-ezdxf==1.1.0
-fonttools==4.42.1
-kiwisolver==1.4.5
-matplotlib==3.8.0
-Nuitka==1.8.2
-numpy==1.26.0
-ordered-set==4.1.0
-packaging==23.1
-pefile==2023.2.7
-Pillow==10.0.1
-pyinstaller==5.13.2
-pyinstaller-hooks-contrib==2023.8
-pyparsing==3.1.1
-python-dateutil==2.8.2
+altgraph @ file:///C:/ci_311/altgraph_1676434977885/work
+auto-py-to-exe==2.42.0
+bottle==0.12.25
+bottle-websocket==0.2.9
+cffi==1.16.0
+contourpy @ file:///C:/ci_311/contourpy_1676431756017/work
+cycler @ file:///tmp/build/80754af9/cycler_1637851556182/work
+Eel==0.16.0
+ezdxf @ file:///D:/bld/ezdxf_1680639065821/work
+fonttools==4.25.0
+future @ file:///C:/ci_311_rebuilds/future_1678998246262/work
+gevent==23.9.1
+gevent-websocket==0.10.1
+greenlet==3.0.3
+kiwisolver @ file:///C:/ci_311/kiwisolver_1676431979301/work
+matplotlib @ file:///C:/b/abs_49b2acwxd4/croot/matplotlib-suite_1679593486357/work
+mkl-fft==1.3.6
+mkl-random @ file:///C:/Users/dev-admin/mkl/mkl_random_1682977971003/work
+mkl-service==2.4.0
+munkres==1.1.4
+Nuitka @ file:///D:/bld/nuitka_1693546978239/work
+numpy @ file:///C:/b/abs_f6napi3n6e/croot/numpy_and_numpy_base_1691091651337/work
+ordered-set @ file:///C:/b/abs_4dowvohc5c/croot/ordered-set_1685115479236/work
+packaging @ file:///C:/b/abs_28t5mcoltc/croot/packaging_1693575224052/work
+pefile @ file:///C:/ci_311/pefile_1676438268619/work
+Pillow==9.4.0
+ply==3.11
+pycparser==2.21
+pyinstaller==6.3.0
+pyinstaller-hooks-contrib @ file:///C:/ci_311/pyinstaller-hooks-contrib_1676438831963/work
+pyparsing @ file:///C:/ci_311/pyparsing_1678502182533/work
+PyQt5==5.15.7
+PyQt5-sip @ file:///C:/ci_311/pyqt-split_1676428895938/work/pyqt_sip
+python-dateutil @ file:///tmp/build/80754af9/python-dateutil_1626374649649/work
+pywin32==305.1
 pywin32-ctypes==0.2.2
-six==1.16.0
-typing_extensions==4.8.0
-zstandard==0.21.0
+sip @ file:///C:/ci_311/sip_1676427825172/work
+six @ file:///tmp/build/80754af9/six_1644875935023/work
+toml @ file:///tmp/build/80754af9/toml_1616166611790/work
+tornado @ file:///C:/b/abs_61jhmrrua1/croot/tornado_1690848767317/work
+typing_extensions @ file:///C:/b/abs_213vg2cd1l/croot/typing_extensions_1690297804941/work
+whichcraft==0.6.1
+zope.event==5.0
+zope.interface==6.1
