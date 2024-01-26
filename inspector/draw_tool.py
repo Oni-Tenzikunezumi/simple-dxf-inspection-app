@@ -12,7 +12,7 @@ import math
 from math import sin, cos
 import io
 from ezdxf.document import Drawing
-from ezdxf.entities import MText, Text
+from ezdxf.entities import MText
 
 class DrawTool:
 
@@ -149,13 +149,18 @@ class DrawTool:
             layer = DrawTool.DefaultLayer
 
         # matplotlib で表示させるために、ms-gothic 追加
-        doc.styles.add("MS Gothic", font="msgothic.ttc")
+        doc.styles.add("MS Gothic", font="c:/windows/font/msgothic.ttc")
 
         msp = doc.modelspace()
-        att = {'layer': layer, 'style': 'MS Gothic','height':height, 'color':color }
-        msp.add_text( txt, dxfattribs=att ).set_placement(pos)
 
-        
+        att = {'layer': layer, 'style': 'MS Gothic', 'color': color}
+        txt = r'\pxqc;{\fMS Gothic|b0|i0|c128|p50;' + txt + '}'
+        mtext = msp.add_mtext(txt, dxfattribs=att)
+        mtext.dxf.char_height = height
+        mtext.dxf.insert = pos
+        mtext.dxf.attachment_point = ezdxf.lldxf.const.MTEXT_BOTTOM_LEFT
+
+
     @staticmethod
     def CopyDoc( doc: Drawing ) -> Drawing:
         '''
