@@ -10,7 +10,7 @@ from inspector.check_base import *
 
 from inspector.check_circle import *
 from inspector.check_arc import *
-from inspector.check_lines import *
+# from inspector.check_lines import *
 
 from inspector.check_frame import *
 from inspector.check_titleblock import *
