@@ -29,3 +29,4 @@ build/simple_viewer/warn-simple_viewer.txt
 *.dblite
 simple_viewer.onefile-build/clcache-stats.8788.txt
 simple_viewer.onefile-build/scons-report.txt
+*.svg
