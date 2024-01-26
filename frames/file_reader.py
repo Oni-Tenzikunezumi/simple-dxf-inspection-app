@@ -11,47 +11,54 @@ from tkinter import filedialog
 import os.path
 
 from ezdxf.addons import odafc as oda
+from ezdxf.document import Drawing
 import ezdxf
 
 from frames.viewer_conf import ViewerConf
+from frames.frame_constants import Fontsize
 
 
 class FileReader(tk.Frame):
     """DXFファイルを読み込むクラス."""
 
+    doc = None
+
     def __init__(self, master: tk.Tk, vconf: ViewerConf):
         """イニシャライザ."""
         super().__init__(master)
         self.vconf = vconf
-        self.doc = None
 
         # 読み込み用フォームの作成
-
         self._filepath = tk.StringVar()
         path_entry = ttk.Entry(self, width=60,
-                               textvariable=self._filepath)
+                               textvariable=self._filepath,
+                               font=("", Fontsize.HEAD))
+
+        style = ttk.Style()
+        style.configure('referring.TButton', font=("", Fontsize.HEAD))
         referring_button = ttk.Button(self, width=-1,
-                                      text='参照',
-                                      command=self.browse_path)
-        self.executing_button = ttk.Button(self,
-                                           text='読み込み',
-                                           command=self.read_file)
+                                      text='参照', command=self.browse_path,
+                                      style='referring.TButton')
+        # self.executing_button = ttk.Button(self,
+        #                                    text='読み込み',
+        #                                    command=self.read_file)
 
         # 配置
         path_entry.pack(side=tk.LEFT)
         referring_button.pack(side=tk.LEFT)
-        self.executing_button.pack(side=tk.LEFT)
+        # self.executing_button.pack(side=tk.LEFT)
 
     def browse_path(self):
         """パス指定."""
         filetype = [('DXFファイル', '*.dxf')]
         if self.vconf.is_oda_installed:
-            filetype = [('AutoCADファイル', '*.dwg'), ('DXFファイル', '*.dxf')]
+            filetype = [('図面ファイル', '*.dwg;*.dxf'), ('AutoCADファイル', '*.dwg'),
+                        ('DXFファイル', '*.dxf')]
         file_path = filedialog.askopenfile(filetype=filetype)
         if file_path is not None:
             self._filepath.set(file_path.name)
 
-    def read_file(self):
+    def read_file(self) -> tuple[Drawing, str]:
         """ファイルの読み込み."""
         filepath = self._filepath.get()
         text = ''
@@ -81,7 +88,7 @@ class FileReader(tk.Frame):
             text = '存在しないパスが指定されています．'
 
         # メッセージを返す.
-        return text
+        return self.doc, text
 
     @property
     def file_path(self):

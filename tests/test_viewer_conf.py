@@ -5,20 +5,17 @@ Created on Tue Sep 19 15:01:02 2023.
 @author: Yuta Kuronuma
 """
 
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-
 from frames.viewer_conf import ViewerConf
 
 # テスト
 if __name__ == '__main__':
-    vc = ViewerConf()
-    print(vc.get_odapath())
+    vc = ViewerConf(initialize_conf=True)
+    print('latest path: ', vc.get_odapath())
 
     path = 'test'
-    vc.update_odapath(path)
-    print(vc.get_odapath())
-    print(vc.dirpath)
-    print(vc.get_odapath())
-    print(vc.is_oda_installed)
+    # vc.update_odapath(path)
+
+    print()
+    print('ODApath: ', vc.get_odapath())
+    print('confPath: ', vc.dirpath)
+    print('Is ODAinstalled: ', vc.is_oda_installed)
