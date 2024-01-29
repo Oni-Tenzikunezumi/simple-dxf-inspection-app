@@ -37,7 +37,7 @@ class CheckOutlineConnectivity(CheckBase):
         print(intersections.outLines.values())
         
         number = 1
-        color = 7
+        color = 34
         results = []
         for entity, cntList in intersections.outLines.items():
             if not CheckOutlineConnectivity.isInFrame(entity, fresult):
@@ -50,9 +50,10 @@ class CheckOutlineConnectivity(CheckBase):
             desc = ''
 
             if entity.dxftype() == 'LINE':
-                
+                start = entity.dxf.start
+                end = entity.dxf.end
 
-                pos = (entity.dxf.start + entity.dxf.end) / 2
+                pos = (start + end) / 2
                 if cntList[0] == 1 or cntList[0] == 0 and cntList[1] >= 2:
                     caption = 'ループが途切れています'
                     desc = 'ループが切れた直線が輪郭線内に存在します'
@@ -67,6 +68,7 @@ class CheckOutlineConnectivity(CheckBase):
                     )
                     results.append(res)
                     number += 1
+                    DrawTool.Line(draw_doc, start, end, color)
                 elif cntList[0] == 0:
                     caption = '余計な線です'
                     desc = '余計な線が輪郭線内に存在します'
@@ -81,7 +83,8 @@ class CheckOutlineConnectivity(CheckBase):
                     )
                     results.append(res)
                     number += 1
-            
+                    DrawTool.Line(draw_doc, start, end, color)
+
             elif entity.dxftype() == 'ARC':
                 pos = entity.start_point
                 if cntList[0] == 1 or cntList[0] == 0 and cntList[1] >= 2:
@@ -98,6 +101,7 @@ class CheckOutlineConnectivity(CheckBase):
                     )
                     results.append(res)
                     number += 1
+                    DrawTool.Arc(draw_doc, entity.dxf.center, entity.dxf.radius, entity.dxf.start_angle, entity.dxf.end_angle, color)
                 elif cntList[0] == 0:
                     caption = '余計な線です'
                     desc = '余計な円弧が輪郭線内に存在します'
@@ -112,11 +116,12 @@ class CheckOutlineConnectivity(CheckBase):
                     )
                     results.append(res)
                     number += 1
+                    DrawTool.Arc(draw_doc, entity.dxf.center, entity.dxf.radius, entity.dxf.start_angle, entity.dxf.end_angle, color)
 
-            elif entity.dxftype() == 'CORCLE':
+            elif entity.dxftype() == 'CIRCLE':
                 pos = entity.dxf.center + Vec3(entity.dxf.radius * math.cos(math.pi / 4), entity.dxf.radius * math.sin(math.pi / 4), 0)
-                if cntList[1] < 2:
-                    caption = 'ロープが途切れた円です'
+                if cntList[1] == 1:
+                    caption = 'ループが途切れた円です'
                     desc = 'ループが切れた円が輪郭線内に存在します'
                     res = CheckResult(
                         num = number,
@@ -129,7 +134,7 @@ class CheckOutlineConnectivity(CheckBase):
                     )
                     results.append(res)
                     number += 1
-
+                    DrawTool.Circle(draw_doc, entity.dxf.center, entity.dxf.radius, color)
 
         print(f'len(reuslts): {len(results)}')
 
